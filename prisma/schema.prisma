@@ -1,0 +1,67 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Users {
+  id       String     @id @default(uuid())
+  name     String
+  avatar   String
+  email    String     @unique
+  address  String
+  city     String
+  state    String
+  country  String
+  type     UserTypes
+  walletId String?
+  income   Int
+  bids     Bids[]     @relation("UserBids")
+  projects Projects[] @relation("UserProjects")
+}
+
+enum UserTypes {
+  CUSTOMER
+  CONTRACTOR
+  HANDYMAN
+}
+
+model Projects {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  type        ProjectTypes
+  isOpen      Boolean
+  userId      String
+  address     String
+  country     String
+  state       String
+  city        String
+  user        Users        @relation("UserProjects", fields: [userId], references: [id])
+  bids        Bids[]       @relation("ProjectBids")
+}
+
+model Bids {
+  id        String   @id @default(uuid())
+  price     Int
+  userId    String
+  projectId String
+  accepted  Boolean
+  project   Projects @relation("ProjectBids", fields: [projectId], references: [id])
+  user      Users    @relation("UserBids", fields: [userId], references: [id])
+}
+
+enum ProjectTypes {
+  PAINTING
+  CONSTRUCTION
+  ELECTRIC
+  RENOVATION
+  OUTDOOR_PROJECT
+  OTHER
+}
