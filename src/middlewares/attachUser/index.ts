@@ -26,16 +26,16 @@ export const attachUser = async (
             where: { id: decodedToken.sub.slice(6) }
           });
 
-          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          req.viewer = user!;
+          if (user) {
+            req.viewer = user;
 
-          res.cookie('userToken', token, {
-            httpOnly: true,
-            sameSite: true,
-            secure: true
-          });
-
-          next();
+            res.cookie('userToken', token, {
+              httpOnly: true,
+              sameSite: true,
+              secure: true
+            });
+            next();
+          }
         } else {
           res.status(403).json({ message: 'Invalid token' });
         }
