@@ -4,7 +4,13 @@ import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
-import { authRouter, csrfRouter, logoutRouter, usersRouter } from '../routes';
+import {
+  authRouter,
+  csrfRouter,
+  logoutRouter,
+  projectsRouter,
+  usersRouter
+} from '../routes';
 import { attachUser, requireAuth } from '../middlewares';
 
 const server = express();
@@ -28,7 +34,8 @@ server.use(attachUser);
 server.use('/api/csrf-token', csrfProtection, csrfRouter);
 server.use('/api/authenticate', authRouter);
 server.use(requireAuth);
-server.use('/api/users', usersRouter);
 server.use('/api/logout', logoutRouter);
+server.use('/api/projects', projectsRouter);
+server.use('/api/users', usersRouter);
 
 export default server;

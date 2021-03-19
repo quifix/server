@@ -1,6 +1,6 @@
 import Joi, { ObjectSchema } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
-import { RegisterArgs } from '../../lib/types/express';
+import { RegisterArgs, UserUpdateArgs } from '../../lib/types/express';
 
 // Validation to register a new user
 export const registerValidation = async (
@@ -35,4 +35,89 @@ export const registerValidation = async (
       res.status(500).json({ message: 'Unexpected error.' });
     }
   }
+};
+
+// Validation to update an existing user
+export const userUpdateValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    /**
+     * @desc      Schema for the request body
+     * @method    PUT
+     */
+    const updateSchema: ObjectSchema = Joi.object().keys({
+      name: Joi.string().min(3).max(128).trim(),
+      email: Joi.string().email().min(3).max(200).trim(),
+      avatar: Joi.string().min(3).max(500).trim(),
+      address: Joi.string().min(8).max(255).trim(),
+      city: Joi.string().min(3).max(128).trim(),
+      state: Joi.string().min(3).max(200).trim(),
+      country: Joi.string().min(3).max(200).trim(),
+      type: Joi.string().min(3).max(128).trim(),
+      walletId: Joi.string().min(3).max(255).trim(),
+      income: Joi.number()
+    });
+
+    const result: UserUpdateArgs = await updateSchema.validateAsync(req.body);
+
+    if (result) {
+      req.updateUserArgs = { ...result };
+
+      if (req.updateUserArgs === req.body) {
+        next();
+      }
+    }
+  } catch (error) {
+    if (error && error.isJoi) {
+      res.status(422).json({ message: error.details[0].message });
+    } else {
+      res.status(500).json({ message: 'Unexpected error' });
+    }
+  }
+};
+
+// Validation for the request param id.
+export const idParamValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    /**
+     * @desc      Schema for req.params.id
+     */
+    const idParamSchema: ObjectSchema = Joi.object().keys({
+      id: Joi.string().min(3).max(255).trim()
+    });
+
+    const result = await idParamSchema.validateAsync(req.params.id);
+
+    if (result) {
+      if (result === req.params.id) {
+        next();
+      }
+    }
+  } catch (error) {
+    if (error && error.isJoi) {
+      res.status(422).json({ message: error.details[0].message });
+    } else {
+      res.status(500).json({ message: 'Unexpected error' });
+    }
+  }
+};
+
+// Validation to update an existing project
+export const projectUpdateValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    /**
+     * @desc      Schema for the request body
+     */
+  } catch (error) {}
 };
