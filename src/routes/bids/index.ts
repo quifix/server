@@ -170,6 +170,7 @@ router.delete(
 
         if (bid && (await verifyOwnership(bid, req.viewer)) === true) {
           await prisma.bids.delete({ where: { id: bid.id } });
+          res.status(204).end();
         } else {
           res
             .status(403)
