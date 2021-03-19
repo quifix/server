@@ -33,9 +33,9 @@ server.get(
 
 server.use(attachUser);
 server.use('/api/authenticate', authRouter);
-server.use('/api/csrf-token', csrfProtection, csrfRouter);
 server.use(requireAuth);
 server.use('/api/bids', bidsRouter);
+server.use('/api/csrf-token', csrfProtection, csrfRouter);
 server.use('/api/logout', logoutRouter);
 server.use('/api/projects', projectsRouter);
 server.use('/api/users', usersRouter);
