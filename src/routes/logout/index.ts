@@ -18,6 +18,7 @@ router.get(
       req.userID = null;
       req.viewer = null;
       res.clearCookie('userToken', cookieOptions);
+      res.clearCookie('_csrf');
       res.status(204).end();
     } catch (error) {
       res.status(500).json({

@@ -37,3 +37,26 @@ router.get(
     }
   }
 );
+
+/**
+ * @desc    Get a single user by id
+ * @route   GET /api/users/:id
+ * @access  Private
+ */
+router.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const id = req.params.id;
+    const user = await prisma.users.findUnique({ where: { id } });
+
+    if (user) {
+      res.status(200).json(user);
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({
+      message:
+        "We've encounted an error while looking for the user. Please try again later!"
+    });
+  }
+});
