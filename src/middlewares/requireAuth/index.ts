@@ -1,7 +1,7 @@
 import jwks from 'jwks-rsa';
-import jwt from 'express-jwt';
+import jwt, { RequestHandler } from 'express-jwt';
 
-export const requireAuth = jwt({
+export const requireAuth: RequestHandler = jwt({
   secret: jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
