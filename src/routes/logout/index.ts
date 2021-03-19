@@ -15,7 +15,8 @@ router.get(
   attachUser,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      req.viewer = undefined;
+      req.userID = null;
+      req.viewer = null;
       res.clearCookie('userToken', cookieOptions);
       res.status(204).end();
     } catch (error) {

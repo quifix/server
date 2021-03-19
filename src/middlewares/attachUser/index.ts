@@ -27,6 +27,7 @@ export const attachUser = async (
           });
 
           if (user) {
+            req.userID = user.id;
             req.viewer = user;
 
             res.cookie('userToken', token, {
@@ -34,6 +35,11 @@ export const attachUser = async (
               sameSite: true,
               secure: true
             });
+
+            next();
+          } else {
+            req.userID = decodedToken.sub.slice(6);
+            req.viewer = null;
             next();
           }
         } else {

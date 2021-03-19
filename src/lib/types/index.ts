@@ -11,15 +11,15 @@ export interface IDToken {
 export interface User {
   id: string;
   name: string;
-  avatar: string;
+  avatar?: string;
   email: string;
-  address: string;
-  city: string;
-  state: string;
-  country: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
   type: UserType;
   walletId?: string;
-  income: number;
+  income?: number;
 }
 
 export enum UserType {

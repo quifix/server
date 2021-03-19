@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Users } from '@prisma/client';
+import { registerValidation } from '../../middlewares';
 
 export const router = express.Router();
 const prisma: PrismaClient = new PrismaClient();
@@ -11,16 +12,22 @@ const prisma: PrismaClient = new PrismaClient();
  */
 router.post(
   '/',
+  registerValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
       if (req.viewer) {
         res.status(200).json(req.viewer);
       }
 
-      const newUser = await prisma.users.create(req.body);
+      if (req.registerArgs && req.userID) {
+        const user: Users = await prisma.users.create({
+          data: { ...req.body, id: req.userID }
+        });
 
-      if (newUser) {
-        res.status(200).json(newUser);
+        if (user) {
+          req.viewer = user;
+          res.status(200).json(user);
+        }
       }
     } catch (error) {
       res.status(500).json({
