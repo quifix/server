@@ -37,7 +37,7 @@ model Projects {
   title       String
   description String
   type        ProjectTypes
-  isOpen      Boolean
+  isOpen      Boolean      @default(true)
   userId      String
   address     String
   country     String
@@ -52,7 +52,7 @@ model Bids {
   price     Int
   userId    String
   projectId String
-  accepted  Boolean
+  accepted  Boolean  @default(false)
   project   Projects @relation("ProjectBids", fields: [projectId], references: [id])
   user      Users    @relation("UserBids", fields: [userId], references: [id])
 }

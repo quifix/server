@@ -1,7 +1,12 @@
 import Joi, { ObjectSchema } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
-import { RegisterArgs, UserUpdateArgs } from '../../lib/types/express';
+import {
+  BidArgs,
+  ProjectArgs,
+  RegisterArgs,
+  UserUpdateArgs
+} from '../../lib/types/express';
 
 // Validation to register a new user
 export const registerValidation = async (
@@ -94,7 +99,7 @@ export const idParamValidation = async (
       id: Joi.string().min(3).max(255).trim()
     });
 
-    const result = await idParamSchema.validateAsync(req.params.id);
+    const result: string = await idParamSchema.validateAsync(req.params.id);
 
     if (result) {
       if (result === req.params.id) {
@@ -125,7 +130,6 @@ export const projectValidation = async (
       title: Joi.string().min(3).max(200).trim().required(),
       description: Joi.string().max(500).trim().required(),
       type: Joi.string().min(3).max(128).trim().required(),
-      isOpen: Joi.boolean().required(),
       userId: Joi.string().min(3).max(200).trim().required(),
       address: Joi.string().min(8).max(255).trim().required(),
       country: Joi.string().min(3).max(200).trim().required(),
@@ -150,7 +154,7 @@ export const projectValidation = async (
     });
 
     if (req.method === 'POST') {
-      const result = await createSchema.validateAsync(req.body);
+      const result: ProjectArgs = await createSchema.validateAsync(req.body);
       if (result) {
         req.projectArgs = { ...result };
 
@@ -162,7 +166,7 @@ export const projectValidation = async (
     }
 
     if (req.method === 'PUT') {
-      const result = await updateSchema.validateAsync(req.body);
+      const result: ProjectArgs = await updateSchema.validateAsync(req.body);
       if (result) {
         req.projectArgs = { ...result };
 
@@ -177,5 +181,62 @@ export const projectValidation = async (
     } else {
       res.status(500).json({ message: 'Unexpected Error' });
     }
+  }
+};
+
+// Validation to create and update a bid
+export const bidValidation = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): Promise<void> => {
+  try {
+    /**
+     * @desc      Schema for the request body
+     * @method    POST
+     */
+    const createSchema: ObjectSchema = Joi.object().keys({
+      price: Joi.number().required(),
+      userId: Joi.string().min(3).max(200).trim().required(),
+      projectId: Joi.string().min(3).max(200).trim().required()
+    });
+
+    /**
+     * @desc      Schema for request body
+     * @method    PUT
+     */
+    const updateSchema: ObjectSchema = Joi.object().keys({
+      price: Joi.number(),
+      accepted: Joi.boolean(),
+      userId: Joi.string().min(3).max(200).trim(),
+      projectId: Joi.string().min(3).max(200).trim()
+    });
+
+    if (req.method === 'POST') {
+      const result: BidArgs = await createSchema.validateAsync(req.body);
+
+      if (result) {
+        req.bidArgs = { ...result };
+
+        if (req.bidArgs === req.body) {
+          req.body.id = uuid();
+          next();
+        }
+      }
+    }
+
+    if (req.method === 'PUT') {
+      const result: BidArgs = await updateSchema.validateAsync(req.body);
+
+      if (result) {
+        req.bidArgs = { ...result };
+
+        if (req.bidArgs === req.body) {
+          next();
+        }
+      }
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Unexpected Error' });
   }
 };

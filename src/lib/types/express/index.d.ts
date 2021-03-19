@@ -29,6 +29,13 @@ export interface ProjectArgs {
   city?: string;
 }
 
+export interface BidArgs {
+  price?: number;
+  userId?: string;
+  projectId?: string;
+  accepted?: boolean;
+}
+
 declare global {
   namespace Express {
     export interface Request {
@@ -37,6 +44,7 @@ declare global {
       userID?: string | null;
       updateUserArgs?: UserUpdateArgs;
       projectArgs: ProjectArgs;
+      bidArgs: BidArgs;
     }
   }
 }
