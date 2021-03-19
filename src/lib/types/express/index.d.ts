@@ -17,13 +17,26 @@ export interface UserUpdateArgs {
   income?: number;
 }
 
+export interface ProjectArgs {
+  title?: string;
+  description?: string;
+  type?: string;
+  isOpen?: boolean;
+  userId?: string;
+  address?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+}
+
 declare global {
   namespace Express {
     export interface Request {
-      viewer?: Users | null;
+      viewer: Users | null;
       registerArgs?: RegisterArgs;
       userID?: string | null;
       updateUserArgs?: UserUpdateArgs;
+      projectArgs: ProjectArgs;
     }
   }
 }
