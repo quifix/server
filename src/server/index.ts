@@ -3,10 +3,12 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
-import { authRouter, logoutRouter, usersRouter } from '../routes';
+import csrf from 'csurf';
+import { authRouter, csrfRouter, logoutRouter, usersRouter } from '../routes';
 import { attachUser, requireAuth } from '../middlewares';
 
 const server = express();
+const csrfProtection = csrf({ cookie: true });
 
 server.use(express.json());
 server.use(helmet());
@@ -23,6 +25,7 @@ server.get(
 );
 
 server.use(attachUser);
+server.use('/api/csrf-token', csrfProtection, csrfRouter);
 server.use('/api/authenticate', authRouter);
 server.use(requireAuth);
 server.use('/api/users', usersRouter);

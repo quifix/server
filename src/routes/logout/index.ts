@@ -22,7 +22,7 @@ router.get(
     } catch (error) {
       res.status(500).json({
         message:
-          "We've encounted an error while logout. Please try again later!"
+          "We've encounted an error during logout. Please try again later!"
       });
     }
   }
