@@ -1,9 +1,4 @@
-import { Users } from '@prisma/client';
 import { RequestContext } from 'express-openid-connect';
-export interface RegisterArgs {
-  name: string;
-  email: string;
-}
 
 export interface UserUpdateArgs {
   name?: string;
@@ -41,8 +36,6 @@ declare global {
   namespace Express {
     export interface Request {
       oidc: RequestContext;
-      viewer: Users | null;
-      registerArgs?: RegisterArgs;
       userID?: string | null;
       updateUserArgs?: UserUpdateArgs;
       projectArgs: ProjectArgs;

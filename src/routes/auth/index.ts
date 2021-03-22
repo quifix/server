@@ -46,13 +46,9 @@ router.get(
               const data: Users = await prisma.users.create({ data: newUser });
 
               if (data) {
-                req.viewer = data;
-                console.log(req.viewer);
                 res.status(201).json(data);
               }
             } else {
-              req.viewer = user;
-              console.log(req.viewer);
               res.status(200).json(user);
             }
           }

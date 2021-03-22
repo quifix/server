@@ -46,8 +46,8 @@ server.get(
 );
 
 server.use('/api/authenticate', authRouter);
-server.use(attachUser);
 server.use(requiresAuth());
+server.use(attachUser);
 server.use('/api/bids', bidsRouter);
 server.use('/api/csrf-token', csrfProtection, csrfRouter);
 server.use('/api/projects', projectsRouter);
@@ -59,7 +59,6 @@ server.get(
     const cookieOptions = { httpOnly: true, sameSite: true, secure: true };
     try {
       req.userID = null;
-      req.viewer = null;
       res.clearCookie('qToken', cookieOptions);
       res.clearCookie('_csrf');
       res.redirect('/logout');
