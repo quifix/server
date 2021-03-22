@@ -8,6 +8,16 @@ export interface IDToken {
   scope?: string;
 }
 
+export interface Auth0User {
+  nickname?: string;
+  name?: string;
+  picture?: string;
+  updated_at?: string;
+  email?: string;
+  email_verified?: boolean;
+  sub: string;
+}
+
 export interface User {
   id: string;
   name: string;

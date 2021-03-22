@@ -19,7 +19,7 @@ model Users {
   city     String?
   state    String?
   country  String?
-  type     UserTypes
+  type     UserTypes  @default(CUSTOMER)
   walletId String?
   income   Int?
   bids     Bids[]     @relation("UserBids")

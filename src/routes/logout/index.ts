@@ -17,7 +17,7 @@ router.get(
     try {
       req.userID = null;
       req.viewer = null;
-      res.clearCookie('userToken', cookieOptions);
+      res.clearCookie('qToken', cookieOptions);
       res.clearCookie('_csrf');
       res.status(204).end();
     } catch (error) {
