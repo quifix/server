@@ -1,9 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwtDecode from 'jwt-decode';
-import { PrismaClient, Users } from '@prisma/client';
 import { IDToken } from '../../lib/types';
-
-const prisma = new PrismaClient();
 
 export const attachUser = async (
   req: Request,
@@ -11,45 +8,16 @@ export const attachUser = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (
-      req.headers &&
-      req.headers.authorization &&
-      req.headers.authorization?.length > 0
-    ) {
-      const token = req.headers.authorization.slice(7);
+    const token = req.cookies.qToken;
 
-      if (token) {
-        const decodedToken: IDToken = await jwtDecode(token);
-
-        if (decodedToken) {
-          const user: Users | null = await prisma.users.findUnique({
-            where: { id: decodedToken.sub.slice(6) }
-          });
-
-          if (user) {
-            req.userID = user.id;
-            req.viewer = user;
-
-            res.cookie('userToken', token, {
-              httpOnly: true,
-              sameSite: true,
-              secure: true
-            });
-
-            next();
-          } else {
-            req.userID = decodedToken.sub.slice(6);
-            req.viewer = null;
-            next();
-          }
-        } else {
-          res.status(403).json({ message: 'Invalid token' });
-        }
-      } else {
-        res
-          .status(403)
-          .json({ message: 'Forbidden access, invalid credentials' });
-      }
+    if (token) {
+      const decodedToken: IDToken = await jwtDecode(token);
+      req.userID = decodedToken.sub.slice(6);
+      next();
+    } else {
+      res
+        .status(403)
+        .json({ message: 'Forbidden access, invalid credentials' });
     }
   } catch (err) {
     res.status(500).json({

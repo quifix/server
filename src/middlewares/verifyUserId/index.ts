@@ -6,14 +6,11 @@ export const verifyUserId = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    if (req.viewer) {
-      const id = req.params.id;
-      if (id === req.viewer.id) {
-        next();
-      }
-      res.status(403).json({ message: 'Unauthorized access!' });
+    const id = req.params.id;
+    if (id === req.userID) {
+      next();
     }
-    res.status(403).json({ message: 'Viewer unavailable, access denied!' });
+    res.status(403).json({ message: 'Unauthorized access!' });
   } catch (error) {
     res.status(500).json({
       message:

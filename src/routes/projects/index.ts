@@ -19,13 +19,12 @@ router.post(
   projectValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const project: Projects = await prisma.projects.create({
-          data: req.body
-        });
-        if (project) {
-          res.status(200).json(project);
-        }
+      const project: Projects = await prisma.projects.create({
+        data: req.body
+      });
+
+      if (project) {
+        res.status(200).json(project);
       }
     } catch (error) {
       res.status(500).json({
@@ -43,7 +42,7 @@ router.post(
  */
 router.get(
   '/',
-  async (_req: Request, res: Response): Promise<void> => {
+  async (req: Request, res: Response): Promise<void> => {
     try {
       const projects: Projects[] = await prisma.projects.findMany();
       res.status(200).json(projects);
@@ -95,29 +94,27 @@ router.put(
   idParamValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const id: string = req.params.id;
-        const project: Projects | null = await prisma.projects.findUnique({
-          where: { id }
-        });
+      const id: string = req.params.id;
+      const project: Projects | null = await prisma.projects.findUnique({
+        where: { id }
+      });
 
-        if (!project) {
-          res.status(404).json({ message: 'Project not found.' });
-        } else {
-          if ((await verifyOwnership(project, req.viewer)) === true) {
-            const result: Projects = await prisma.projects.update({
-              where: { id },
-              data: { ...req.body }
-            });
+      if (!project) {
+        res.status(404).json({ message: 'Project not found.' });
+      } else {
+        if ((await verifyOwnership(project, req.userID || '')) === true) {
+          const result: Projects = await prisma.projects.update({
+            where: { id },
+            data: { ...req.body }
+          });
 
-            if (result) {
-              res.status(201).json(result);
-            }
-          } else {
-            res
-              .status(403)
-              .json({ message: 'Access denied! You do not own this project.' });
+          if (result) {
+            res.status(201).json(result);
           }
+        } else {
+          res
+            .status(403)
+            .json({ message: 'Access denied! You do not own this project.' });
         }
       }
     } catch (error) {
@@ -139,24 +136,22 @@ router.delete(
   idParamValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const id: string = req.params.id;
-        const project: Projects | null = await prisma.projects.findUnique({
-          where: { id }
-        });
+      const id: string = req.params.id;
+      const project: Projects | null = await prisma.projects.findUnique({
+        where: { id }
+      });
 
-        if (!project) {
-          res.status(404).json({ message: 'Project not found.' });
+      if (!project) {
+        res.status(404).json({ message: 'Project not found.' });
+      } else {
+        if ((await verifyOwnership(project, req.userID || '')) === true) {
+          await prisma.projects.delete({ where: { id: project.id } });
+
+          res.status(204).end();
         } else {
-          if ((await verifyOwnership(project, req.viewer)) === true) {
-            await prisma.projects.delete({ where: { id: project.id } });
-
-            res.status(204).end();
-          } else {
-            res
-              .status(403)
-              .json({ message: 'Access denied! You do not own this project.' });
-          }
+          res
+            .status(403)
+            .json({ message: 'Access denied! You do not own this project.' });
         }
       }
     } catch (error) {

@@ -7,8 +7,8 @@ export const router = express.Router();
 const prisma: PrismaClient = new PrismaClient();
 
 /**
- * @desc    Register or log users.
- * @route   POST /api/authenticate
+ * @desc    Register or log users coming from Auth0.
+ * @route   GET /api/authenticate
  * @access  Public
  */
 router.get(
@@ -47,15 +47,16 @@ router.get(
 
               if (data) {
                 req.viewer = data;
+                console.log(req.viewer);
                 res.status(201).json(data);
               }
             } else {
+              req.viewer = user;
+              console.log(req.viewer);
               res.status(200).json(user);
             }
           }
         }
-      } else {
-        res.redirect('/login');
       }
     } catch (error) {
       res.status(500).json({

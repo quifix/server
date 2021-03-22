@@ -1,4 +1,4 @@
-import Joi, { ObjectSchema } from '@hapi/joi';
+import Joi, { ObjectSchema, StringSchema } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
 import { v4 as uuid } from 'uuid';
 import {
@@ -95,9 +95,7 @@ export const idParamValidation = async (
     /**
      * @desc      Schema for req.params.id
      */
-    const idParamSchema: ObjectSchema = Joi.object().keys({
-      id: Joi.string().min(3).max(255).trim()
-    });
+    const idParamSchema: StringSchema = Joi.string().min(3).max(255).trim();
 
     const result: string = await idParamSchema.validateAsync(req.params.id);
 

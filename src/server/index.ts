@@ -5,11 +5,11 @@ import morgan from 'morgan';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
+import { attachUser } from '../middlewares';
 import {
   authRouter,
   bidsRouter,
   csrfRouter,
-  logoutRouter,
   projectsRouter,
   usersRouter
 } from '../routes';
@@ -34,11 +34,8 @@ server.use(cookieParser());
 server.use(auth(authConfig));
 
 // Routes
-
-server.get(
-  '/',
-  async (_req: Request, res: Response): Promise<void> =>
-    res.redirect('/api/authenticate')
+server.get('/', (req: Request, res: Response): void =>
+  res.redirect('/api/authenticate')
 );
 
 server.get(
@@ -49,11 +46,30 @@ server.get(
 );
 
 server.use('/api/authenticate', authRouter);
+server.use(attachUser);
 server.use(requiresAuth());
 server.use('/api/bids', bidsRouter);
 server.use('/api/csrf-token', csrfProtection, csrfRouter);
-server.use('/api/logout', logoutRouter);
 server.use('/api/projects', projectsRouter);
 server.use('/api/users', usersRouter);
+
+server.get(
+  '/api/logout',
+  async (req: Request, res: Response): Promise<void> => {
+    const cookieOptions = { httpOnly: true, sameSite: true, secure: true };
+    try {
+      req.userID = null;
+      req.viewer = null;
+      res.clearCookie('qToken', cookieOptions);
+      res.clearCookie('_csrf');
+      res.redirect('/logout');
+    } catch (error) {
+      res.status(500).json({
+        message:
+          "We've encounted an error while logging out. Please try again later!"
+      });
+    }
+  }
+);
 
 export default server;

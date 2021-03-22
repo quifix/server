@@ -1,10 +1,11 @@
-import { Bids, Projects, Users } from '.prisma/client';
+import { Bids, Projects } from '.prisma/client';
 
 export const verifyOwnership = async (
   item: Projects | Bids,
-  user: Users
+  userId: string
 ): Promise<boolean | void> => {
-  if (item.userId !== user.id) {
+  if (!userId) return false;
+  if (item.userId !== userId) {
     return false;
   }
   return true;

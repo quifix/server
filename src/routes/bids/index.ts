@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import { Bids, PrismaClient, Projects } from '@prisma/client';
+import { Bids, PrismaClient, Projects, Users } from '@prisma/client';
 import {
   bidValidation,
   idParamValidation,
@@ -20,14 +20,18 @@ router.post(
   bidValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        if (verifyUserType(req.viewer) === true) {
+      const user: Users | null = await prisma.users.findUnique({
+        where: { id: req.userID || '' }
+      });
+
+      if (user) {
+        if (verifyUserType(user) === true) {
           const project: Projects | null = await prisma.projects.findUnique({
             where: { id: req.body.projectId }
           });
 
           if (project) {
-            if ((await verifyOwnership(project, req.viewer)) === true) {
+            if ((await verifyOwnership(project, req.userID || '')) === true) {
               res.status(400).json({
                 message: 'Bad request. Bid on personal project not allowed'
               });
@@ -46,6 +50,10 @@ router.post(
             message: 'User type not allowed to bid on project.'
           });
         }
+      } else {
+        throw new Error(
+          "We've encounted an error and couldn't get the user info, or User record not found in database."
+        );
       }
     } catch (error) {
       res.status(500).json({
@@ -88,18 +96,16 @@ router.get(
   '/:id',
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const id: string = req.params.id;
-        const bid: Bids | null = await prisma.bids.findUnique({
-          where: { id }
-        });
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({
+        where: { id }
+      });
 
-        if (!bid) {
-          res.status(404).json({ message: 'Bid not found' });
-        }
-
-        res.status(200).json(bid);
+      if (!bid) {
+        res.status(404).json({ message: 'Bid not found' });
       }
+
+      res.status(200).json(bid);
     } catch (error) {
       res.status(500).json({
         message:
@@ -120,24 +126,22 @@ router.put(
   bidValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const id: string = req.params.id;
-        const bid: Bids | null = await prisma.bids.findUnique({
-          where: { id }
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({
+        where: { id }
+      });
+
+      if (!bid) {
+        res.status(404).json({ message: 'Bid not found.' });
+      }
+
+      if (bid && (await verifyOwnership(bid, req.userID || '')) === true) {
+        const result: Bids = await prisma.bids.update({
+          where: { id: bid.id },
+          data: { ...req.body }
         });
 
-        if (!bid) {
-          res.status(404).json({ message: 'Bid not found.' });
-        }
-
-        if (bid && (await verifyOwnership(bid, req.viewer)) === true) {
-          const result: Bids = await prisma.bids.update({
-            where: { id: bid.id },
-            data: { ...req.body }
-          });
-
-          res.status(201).json(result);
-        }
+        res.status(201).json(result);
       }
     } catch (error) {
       res.status(500).json({
@@ -158,25 +162,23 @@ router.delete(
   idParamValidation,
   async (req: Request, res: Response): Promise<void> => {
     try {
-      if (req.viewer) {
-        const id: string = req.params.id;
-        const bid: Bids | null = await prisma.bids.findUnique({
-          where: { id }
-        });
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({
+        where: { id }
+      });
 
-        if (!bid) {
-          res.status(404).json({ message: 'Bid not found' });
-        }
+      if (!bid) {
+        res.status(404).json({ message: 'Bid not found' });
+      }
 
-        if (bid && (await verifyOwnership(bid, req.viewer)) === true) {
-          await prisma.bids.delete({ where: { id: bid.id } });
+      if (bid && (await verifyOwnership(bid, req.userID || '')) === true) {
+        await prisma.bids.delete({ where: { id: bid.id } });
 
-          res.status(204).end();
-        } else {
-          res
-            .status(403)
-            .json({ message: 'Access denied! You do not own this bid.' });
-        }
+        res.status(204).end();
+      } else {
+        res
+          .status(403)
+          .json({ message: 'Access denied! You do not own this bid.' });
       }
     } catch (error) {
       res.status(500).json({
