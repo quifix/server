@@ -1,10 +1,11 @@
 import express, { Request, Response } from 'express';
-import { auth, requiresAuth } from 'express-openid-connect';
-import helmet from 'helmet';
-import morgan from 'morgan';
-import cors from 'cors';
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import csrf from 'csurf';
+import helmet from 'helmet';
+import jwt from 'express-jwt';
+import jwks from 'jwks-rsa';
+import morgan from 'morgan';
 import { attachUser } from '../middlewares';
 import {
   authRouter,
@@ -16,28 +17,26 @@ import {
 
 const server = express();
 const csrfProtection = csrf({ cookie: true });
-
-const authConfig = {
-  authRequired: false,
-  auth0Logout: true,
-  baseURL: process.env.BASE_URL,
-  clientID: process.env.ISSUER_CLIENT_ID,
-  issuerBaseURL: process.env.ISSUER_BASE_URL,
-  secret: process.env.SECRET
-};
+const jwtCheck = jwt({
+  secret: jwks.expressJwtSecret({
+    cache: true,
+    rateLimit: true,
+    jwksRequestsPerMinute: 5,
+    jwksUri: process.env.JWKS_URI || ''
+  }),
+  audience: process.env.AUTH0_AUDIENCE || '',
+  issuer: process.env.AUTH0_ISSUER || '',
+  algorithms: ['RS256'],
+  getToken: req => req.cookies._token
+});
 
 server.use(express.json());
+server.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 server.use(helmet());
 server.use(morgan('dev'));
-server.use(cors());
 server.use(cookieParser());
-server.use(auth(authConfig));
 
 // Routes
-server.get('/', (req: Request, res: Response): void =>
-  res.redirect('/api/authenticate')
-);
-
 server.get(
   '/api',
   async (_req: Request, res: Response): Promise<void> => {
@@ -45,23 +44,19 @@ server.get(
   }
 );
 
-server.use('/api/authenticate', authRouter);
-server.use(requiresAuth());
-server.use(attachUser);
-server.use('/api/bids', bidsRouter);
 server.use('/api/csrf-token', csrfProtection, csrfRouter);
-server.use('/api/projects', projectsRouter);
-server.use('/api/users', usersRouter);
 
-server.get(
+server.use(attachUser);
+server.use('/api/authenticate', authRouter);
+server.post(
   '/api/logout',
   async (req: Request, res: Response): Promise<void> => {
     const cookieOptions = { httpOnly: true, sameSite: true, secure: true };
     try {
       req.userID = null;
-      res.clearCookie('qToken', cookieOptions);
+      res.clearCookie('_token', cookieOptions);
       res.clearCookie('_csrf');
-      res.redirect('/logout');
+      res.status(204).end();
     } catch (error) {
       res.status(500).json({
         message:
@@ -70,5 +65,9 @@ server.get(
     }
   }
 );
+server.use(jwtCheck);
+server.use('/api/bids', bidsRouter);
+server.use('/api/projects', projectsRouter);
+server.use('/api/users', usersRouter);
 
 export default server;

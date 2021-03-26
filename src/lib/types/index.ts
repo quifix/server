@@ -1,3 +1,19 @@
+export interface Auth0User {
+  id: string;
+  name: string;
+  avatar: string;
+  email: string;
+  type: string;
+}
+
+export interface Bid {
+  id: string;
+  price: number;
+  projectId: string;
+  userId: string;
+  accepted: boolean;
+}
+
 export interface IDToken {
   iss?: string;
   sub: string;
@@ -6,36 +22,6 @@ export interface IDToken {
   exp: number;
   iat: number;
   scope?: string;
-}
-
-export interface Auth0User {
-  nickname?: string;
-  name?: string;
-  picture?: string;
-  updated_at?: string;
-  email?: string;
-  email_verified?: boolean;
-  sub: string;
-}
-
-export interface User {
-  id: string;
-  name: string;
-  avatar?: string;
-  email: string;
-  address?: string;
-  city?: string;
-  state?: string;
-  country?: string;
-  type: UserType;
-  walletId?: string;
-  income?: number;
-}
-
-export enum UserType {
-  Customer = 'CUSTOMER',
-  Contractor = 'CONTRACTOR',
-  Handyman = 'HANDYMAN'
 }
 
 export interface Project {
@@ -60,10 +46,22 @@ export enum ProjectType {
   Other = 'OTHER'
 }
 
-export interface Bid {
+export interface User {
   id: string;
-  price: number;
-  projectId: string;
-  userId: string;
-  accepted: boolean;
+  name: string;
+  avatar?: string;
+  email: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  type: UserType;
+  walletId?: string;
+  income?: number;
+}
+
+export enum UserType {
+  Customer = 'CUSTOMER',
+  Contractor = 'CONTRACTOR',
+  Handyman = 'HANDYMAN'
 }

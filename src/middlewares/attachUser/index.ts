@@ -8,10 +8,25 @@ export const attachUser = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.cookies.qToken;
+    let token = '';
+
+    if (req.headers.authorization) {
+      token = req.headers.authorization.slice(7);
+
+      res.cookie('_token', token, {
+        httpOnly: true,
+        sameSite: true,
+        secure: true
+      });
+    }
+
+    if (req.cookies._token) {
+      token = req.cookies._token;
+    }
 
     if (token) {
       const decodedToken: IDToken = await jwtDecode(token);
+
       req.userID = decodedToken.sub.slice(6);
       next();
     } else {
