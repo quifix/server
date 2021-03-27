@@ -14,27 +14,35 @@ router.post(
   async (req: Request, res: Response): Promise<void> => {
     try {
       const user: Users | null = await prisma.users.findUnique({
-        where: { id: req.userID || '' }
+        where: { id: req.auth0User.sub }
       });
 
-      if (!user) {
-        const newUser: Users = {
-          id: req.userID || '',
-          name: req.body.nickname || '',
-          email: req.body.email,
-          avatar: req.body.avatar,
-          type: req.body.type ? req.body.type : UserTypes.CUSTOMER
-        };
-
-        const data: Users = await prisma.users.create({ data: newUser });
-
-        if (data) {
-          res.status(201).json(data);
-        }
-      } else {
+      if (user) {
         res.status(200).json(user);
+      } else {
+        const {
+          sub: id,
+          nickname: name,
+          email,
+          picture: avatar
+        } = req.auth0User;
+
+        const type = UserTypes.CUSTOMER;
+
+        const data: Users = await prisma.users.create({
+          data: {
+            id,
+            name,
+            email,
+            avatar,
+            type
+          }
+        });
+
+        res.status(201).json(data);
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({
         message: 'Failed to authenticate user. Please try again later!'
       });

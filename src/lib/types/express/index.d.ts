@@ -1,4 +1,12 @@
-import { RequestContext, Session } from 'express-openid-connect';
+export interface Auth0User {
+  sub: string;
+  nickname: string;
+  name: string;
+  picture: string;
+  updated_at: string;
+  email: string;
+  email_verified: string;
+}
 
 export interface UserUpdateArgs {
   name?: string;
@@ -36,6 +44,7 @@ declare global {
   namespace Express {
     export interface Request {
       userID: string | null;
+      auth0User: Auth0User;
       updateUserArgs: UserUpdateArgs;
       projectArgs: ProjectArgs;
       bidArgs: BidArgs;

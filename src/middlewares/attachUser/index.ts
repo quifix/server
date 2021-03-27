@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import jwtDecode from 'jwt-decode';
-import { IDToken } from '../../lib/types';
+import axios from 'axios';
 
 export const attachUser = async (
   req: Request,
@@ -25,9 +24,17 @@ export const attachUser = async (
     }
 
     if (token) {
-      const decodedToken: IDToken = await jwtDecode(token);
+      axios.defaults.headers['content-type'] = 'application/json';
+      axios.defaults.headers['authorization'] = `Bearer ${token}`;
 
-      req.userID = decodedToken.sub.slice(6);
+      const { data } = await axios.get(
+        `${process.env.ISSUER_BASE_URL}/userinfo`
+      );
+
+      data.sub = data.sub.slice(6);
+      req.auth0User = data;
+      req.userID = req.auth0User.sub;
+
       next();
     } else {
       res

@@ -114,23 +114,14 @@ export const projectValidation = async (
     if (req.method === 'POST') {
       const result: ProjectArgs = await createSchema.validateAsync(req.body);
       if (result) {
-        req.projectArgs = { ...result };
-
-        if (req.body === req.projectArgs) {
-          req.body.id = uuid();
-          next();
-        }
+        next();
       }
     }
 
     if (req.method === 'PUT') {
       const result: ProjectArgs = await updateSchema.validateAsync(req.body);
       if (result) {
-        req.projectArgs = { ...result };
-
-        if (req.body === req.projectArgs) {
-          next();
-        }
+        next();
       }
     }
   } catch (error) {

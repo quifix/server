@@ -45,9 +45,13 @@ server.get(
 );
 
 server.use('/api/csrf-token', csrfProtection, csrfRouter);
-
 server.use(attachUser);
 server.use('/api/authenticate', authRouter);
+server.use(jwtCheck);
+server.use('/api/bids', bidsRouter);
+server.use('/api/projects', projectsRouter);
+server.use('/api/users', usersRouter);
+
 server.post(
   '/api/logout',
   async (req: Request, res: Response): Promise<void> => {
@@ -65,9 +69,5 @@ server.post(
     }
   }
 );
-server.use(jwtCheck);
-server.use('/api/bids', bidsRouter);
-server.use('/api/projects', projectsRouter);
-server.use('/api/users', usersRouter);
 
 export default server;
