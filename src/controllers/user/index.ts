@@ -22,8 +22,7 @@ class UserController {
         city: true,
         state: true,
         country: true,
-        type: true,
-        income: true
+        type: true
       }
     });
 

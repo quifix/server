@@ -1,4 +1,4 @@
-import yup, { StringSchema } from 'yup';
+import * as yup from 'yup';
 import { NextFunction, Request, Response } from 'express';
 import { BidArgs, ProjectArgs, UserUpdateArgs } from '../../lib/types/express';
 import { ApiError } from '../../controllers';
@@ -6,7 +6,7 @@ import { ApiError } from '../../controllers';
 // Validation to update an existing user
 export const userUpdateValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -34,7 +34,7 @@ export const userUpdateValidation = async (
       next();
     }
   } catch (error) {
-    next(ApiError.validationError(error.details[0].message));
+    next(ApiError.validationError(error));
     return;
   }
 };
@@ -42,14 +42,14 @@ export const userUpdateValidation = async (
 // Validation for the request param id.
 export const idParamValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     /**
      * @desc      Schema for req.params.id
      */
-    const idParamSchema: StringSchema = yup.string().min(3).max(255).trim();
+    const idParamSchema = yup.string().min(3).max(255).trim();
 
     const result: string | undefined = await idParamSchema.validate(
       req.params.id
@@ -60,14 +60,14 @@ export const idParamValidation = async (
       next();
     }
   } catch (error) {
-    next(ApiError.validationError(error.details[0].message));
+    next(ApiError.validationError(error));
   }
 };
 
 // Validation to update an existing project
 export const projectValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -118,14 +118,14 @@ export const projectValidation = async (
       }
     }
   } catch (error) {
-    next(ApiError.validationError(error.details[0].message));
+    next(ApiError.validationError(error));
   }
 };
 
 // Validation to create and update a bid
 export const bidValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -168,6 +168,6 @@ export const bidValidation = async (
       }
     }
   } catch (error) {
-    next(ApiError.validationError(error.details[0].message));
+    next(ApiError.validationError(error));
   }
 };

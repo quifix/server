@@ -50,7 +50,6 @@ export interface ManyUsers {
   state: string | null;
   country: string | null;
   type: string | null;
-  income: number | null;
 }
 
 declare global {
