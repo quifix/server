@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClient, Users } from '@prisma/client';
+import { Users } from '@prisma/client';
 
+import prisma from '../../data';
 import ApiError from '../error';
 import { ManyUsers } from '../../lib/types/express';
-
-const prisma: PrismaClient = new PrismaClient();
 
 class UserController {
   /**

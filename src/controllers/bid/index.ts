@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { Bids, PrismaClient, Projects, Users } from '@prisma/client';
+import { Bids, Projects, Users } from '@prisma/client';
 
+import prisma from '../../data';
 import { verifyOwnership, verifyUserType } from '../../middleware';
 import ApiError from '../error';
-
-const prisma: PrismaClient = new PrismaClient();
 
 class BidController {
   /**

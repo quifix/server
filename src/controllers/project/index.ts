@@ -1,10 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClient, Projects } from '@prisma/client';
+import { Projects } from '@prisma/client';
 
+import prisma from '../../data';
 import { verifyOwnership } from '../../middleware';
 import ApiError from '../error';
-
-const prisma: PrismaClient = new PrismaClient();
 
 class ProjectController {
   /**

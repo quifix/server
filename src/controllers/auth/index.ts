@@ -1,12 +1,16 @@
 import { NextFunction, Request, Response } from 'express';
-import { PrismaClient, Users, UserTypes } from '@prisma/client';
+import { Users, UserTypes } from '@prisma/client';
 import axios from 'axios';
+
+import prisma from '../../data';
 import ApiError from '../error';
 
-const prisma: PrismaClient = new PrismaClient();
-
 class AuthController {
-  // AUTHENTICATE
+  /**
+   * @desc    Register or log users coming from Auth0.
+   * @route   POST /api/authenticate
+   * @access  Public
+   */
   async auth(req: Request, res: Response, next: NextFunction): Promise<void> {
     const token = req.headers.authorization?.slice(7);
 
@@ -57,7 +61,11 @@ class AuthController {
     }
   }
 
-  // LOGOUT
+  /**
+   * @desc   Logout user
+   * @route   POST /api/logout
+   * @access  Private
+   */
   async logout(req: Request, res: Response): Promise<void> {
     const cookieOptions = { httpOnly: true, sameSite: true, secure: true };
 
@@ -68,7 +76,11 @@ class AuthController {
     res.status(204).end();
   }
 
-  //  CSRF
+  /**
+   * @desc    Get csrf token.
+   * @route   GET /api/csrf-token
+   * @access  Public
+   */
   async getCsrf(req: Request, res: Response): Promise<void> {
     res.status(200).json({ csrfToken: req.csrfToken() });
   }
