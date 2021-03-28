@@ -1,6 +1,7 @@
-import Joi, { ObjectSchema, StringSchema } from '@hapi/joi';
+import yup, { StringSchema } from 'yup';
 import { NextFunction, Request, Response } from 'express';
 import { BidArgs, ProjectArgs, UserUpdateArgs } from '../../lib/types/express';
+import { ApiError } from '../../controllers';
 
 // Validation to update an existing user
 export const userUpdateValidation = async (
@@ -13,30 +14,28 @@ export const userUpdateValidation = async (
      * @desc      Schema for the request body
      * @method    PUT
      */
-    const updateSchema: ObjectSchema = Joi.object().keys({
-      name: Joi.string().min(3).max(128).trim(),
-      email: Joi.string().email().min(3).max(200).trim(),
-      avatar: Joi.string().min(3).max(500).trim(),
-      address: Joi.string().min(8).max(255).trim(),
-      city: Joi.string().min(3).max(128).trim(),
-      state: Joi.string().min(3).max(200).trim(),
-      country: Joi.string().min(3).max(200).trim(),
-      type: Joi.string().min(3).max(128).trim(),
-      walletId: Joi.string().min(3).max(255).trim(),
-      income: Joi.number()
+    const updateSchema = yup.object().shape({
+      name: yup.string().min(3).max(128).trim(),
+      email: yup.string().email().min(3).max(200).trim(),
+      avatar: yup.string().min(3).max(500).trim(),
+      address: yup.string().min(8).max(255).trim(),
+      city: yup.string().min(3).max(128).trim(),
+      state: yup.string().min(3).max(200).trim(),
+      country: yup.string().min(3).max(200).trim(),
+      type: yup.string().min(3).max(128).trim(),
+      walletId: yup.string().min(3).max(255).trim(),
+      income: yup.number().integer()
     });
 
-    const result: UserUpdateArgs = await updateSchema.validateAsync(req.body);
+    const result: UserUpdateArgs = await updateSchema.validate(req.body);
 
     if (result) {
+      req.body = result;
       next();
     }
   } catch (error) {
-    if (error && error.isJoi) {
-      res.status(422).json({ message: error.details[0].message });
-    } else {
-      res.status(500).json({ message: 'Unexpected error' });
-    }
+    next(ApiError.validationError(error.details[0].message));
+    return;
   }
 };
 
@@ -50,19 +49,18 @@ export const idParamValidation = async (
     /**
      * @desc      Schema for req.params.id
      */
-    const idParamSchema: StringSchema = Joi.string().min(3).max(255).trim();
+    const idParamSchema: StringSchema = yup.string().min(3).max(255).trim();
 
-    const result: string = await idParamSchema.validateAsync(req.params.id);
+    const result: string | undefined = await idParamSchema.validate(
+      req.params.id
+    );
 
     if (result) {
+      req.params.id = result;
       next();
     }
   } catch (error) {
-    if (error && error.isJoi) {
-      res.status(422).json({ message: error.details[0].message });
-    } else {
-      res.status(500).json({ message: 'Unexpected error' });
-    }
+    next(ApiError.validationError(error.details[0].message));
   }
 };
 
@@ -77,52 +75,50 @@ export const projectValidation = async (
      * @desc      Schema for the request body
      * @method    POST
      */
-    const createSchema: ObjectSchema = Joi.object().keys({
-      title: Joi.string().min(3).max(200).trim().required(),
-      description: Joi.string().max(500).trim().required(),
-      type: Joi.string().min(3).max(128).trim().required(),
-      userId: Joi.string().min(3).max(200).trim().required(),
-      address: Joi.string().min(8).max(255).trim().required(),
-      country: Joi.string().min(3).max(200).trim().required(),
-      state: Joi.string().min(3).max(200).trim().required(),
-      city: Joi.string().min(3).max(128).trim().required()
+    const createSchema = yup.object().shape({
+      title: yup.string().min(3).max(200).trim().required(),
+      description: yup.string().max(500).trim().required(),
+      type: yup.string().min(3).max(128).trim().required(),
+      userId: yup.string().min(3).max(200).trim().required(),
+      address: yup.string().min(8).max(255).trim().required(),
+      country: yup.string().min(3).max(200).trim().required(),
+      state: yup.string().min(3).max(200).trim().required(),
+      city: yup.string().min(3).max(128).trim().required()
     });
 
     /**
      * @desc      Schema for the request body
      * @method    PUT
      */
-    const updateSchema: ObjectSchema = Joi.object().keys({
-      title: Joi.string().min(3).max(200).trim(),
-      description: Joi.string().max(500).trim(),
-      type: Joi.string().min(3).max(128).trim(),
-      isOpen: Joi.boolean(),
-      userId: Joi.string().min(3).max(200).trim(),
-      address: Joi.string().min(8).max(255).trim(),
-      country: Joi.string().min(3).max(200).trim(),
-      state: Joi.string().min(3).max(200).trim(),
-      city: Joi.string().min(3).max(128).trim()
+    const updateSchema = yup.object().shape({
+      title: yup.string().min(3).max(200).trim(),
+      description: yup.string().max(500).trim(),
+      type: yup.string().min(3).max(128).trim(),
+      isOpen: yup.boolean(),
+      userId: yup.string().min(3).max(200).trim(),
+      address: yup.string().min(8).max(255).trim(),
+      country: yup.string().min(3).max(200).trim(),
+      state: yup.string().min(3).max(200).trim(),
+      city: yup.string().min(3).max(128).trim()
     });
 
     if (req.method === 'POST') {
-      const result: ProjectArgs = await createSchema.validateAsync(req.body);
+      const result: ProjectArgs = await createSchema.validate(req.body);
       if (result) {
+        req.body = result;
         next();
       }
     }
 
     if (req.method === 'PUT') {
-      const result: ProjectArgs = await updateSchema.validateAsync(req.body);
+      const result: ProjectArgs = await updateSchema.validate(req.body);
       if (result) {
+        req.body = result;
         next();
       }
     }
   } catch (error) {
-    if (error && error.isJoi) {
-      res.status(422).json({ message: error.details[0].message });
-    } else {
-      res.status(500).json({ message: 'Unexpected Error' });
-    }
+    next(ApiError.validationError(error.details[0].message));
   }
 };
 
@@ -137,39 +133,41 @@ export const bidValidation = async (
      * @desc      Schema for the request body
      * @method    POST
      */
-    const createSchema: ObjectSchema = Joi.object().keys({
-      price: Joi.number().required(),
-      userId: Joi.string().min(3).max(200).trim().required(),
-      projectId: Joi.string().min(3).max(200).trim().required()
+    const createSchema = yup.object().shape({
+      price: yup.number().required(),
+      userId: yup.string().min(3).max(200).trim().required(),
+      projectId: yup.string().min(3).max(200).trim().required()
     });
 
     /**
      * @desc      Schema for request body
      * @method    PUT
      */
-    const updateSchema: ObjectSchema = Joi.object().keys({
-      price: Joi.number(),
-      accepted: Joi.boolean(),
-      userId: Joi.string().min(3).max(200).trim(),
-      projectId: Joi.string().min(3).max(200).trim()
+    const updateSchema = yup.object().shape({
+      price: yup.number(),
+      accepted: yup.boolean(),
+      userId: yup.string().min(3).max(200).trim(),
+      projectId: yup.string().min(3).max(200).trim()
     });
 
     if (req.method === 'POST') {
-      const result: BidArgs = await createSchema.validateAsync(req.body);
+      const result: BidArgs = await createSchema.validate(req.body);
 
       if (result) {
+        req.body = result;
         next();
       }
     }
 
     if (req.method === 'PUT') {
-      const result: BidArgs = await updateSchema.validateAsync(req.body);
+      const result: BidArgs = await updateSchema.validate(req.body);
 
       if (result) {
+        req.body = result;
         next();
       }
     }
   } catch (error) {
-    res.status(500).json({ message: 'Unexpected Error' });
+    next(ApiError.validationError(error.details[0].message));
   }
 };

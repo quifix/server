@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import server from './server';
+import server from './api';
 
 const port: string | undefined = process.env.PORT;
 

@@ -19,6 +19,10 @@ export default class ApiError {
     return new ApiError(404, msg);
   }
 
+  static validationError(msg: string): ApiError {
+    return new ApiError(422, msg);
+  }
+
   static internal(msg: string): ApiError {
     return new ApiError(500, msg);
   }
