@@ -1,6 +1,5 @@
 import Joi, { ObjectSchema, StringSchema } from '@hapi/joi';
 import { NextFunction, Request, Response } from 'express';
-import { v4 as uuid } from 'uuid';
 import { BidArgs, ProjectArgs, UserUpdateArgs } from '../../lib/types/express';
 
 // Validation to update an existing user
@@ -30,11 +29,7 @@ export const userUpdateValidation = async (
     const result: UserUpdateArgs = await updateSchema.validateAsync(req.body);
 
     if (result) {
-      req.updateUserArgs = { ...result };
-
-      if (req.updateUserArgs === req.body) {
-        next();
-      }
+      next();
     }
   } catch (error) {
     if (error && error.isJoi) {
@@ -60,9 +55,7 @@ export const idParamValidation = async (
     const result: string = await idParamSchema.validateAsync(req.params.id);
 
     if (result) {
-      if (result === req.params.id) {
-        next();
-      }
+      next();
     }
   } catch (error) {
     if (error && error.isJoi) {
@@ -165,12 +158,7 @@ export const bidValidation = async (
       const result: BidArgs = await createSchema.validateAsync(req.body);
 
       if (result) {
-        req.bidArgs = { ...result };
-
-        if (req.bidArgs === req.body) {
-          req.body.id = uuid();
-          next();
-        }
+        next();
       }
     }
 
@@ -178,11 +166,7 @@ export const bidValidation = async (
       const result: BidArgs = await updateSchema.validateAsync(req.body);
 
       if (result) {
-        req.bidArgs = { ...result };
-
-        if (req.bidArgs === req.body) {
-          next();
-        }
+        next();
       }
     }
   } catch (error) {

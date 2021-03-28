@@ -4,8 +4,8 @@ import { AuthController } from '../../controllers';
 export const router = express.Router();
 
 /**
- * @desc    Get csrf token.
- * @route   GET /api/csrf-token
- * @access  Public
+ * @desc   Logout user
+ * @route   POST /api/logout
+ * @access  Private
  */
-router.get('/', AuthController.getCsrf);
+router.post('/', AuthController.logout);

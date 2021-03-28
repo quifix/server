@@ -40,14 +40,24 @@ export interface BidArgs {
   accepted?: boolean;
 }
 
+export interface ManyUsers {
+  id: string;
+  name: string;
+  avatar: string | null;
+  email: string;
+  address: string | null;
+  city: string | null;
+  state: string | null;
+  country: string | null;
+  type: string | null;
+  income: number | null;
+}
+
 declare global {
   namespace Express {
     export interface Request {
       userID: string | null;
-      auth0User: Auth0User;
-      updateUserArgs: UserUpdateArgs;
-      projectArgs: ProjectArgs;
-      bidArgs: BidArgs;
+      auth0User: Auth0User | Record<string, never>;
     }
   }
 }
