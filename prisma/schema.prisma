@@ -45,6 +45,7 @@ model Projects {
   city        String
   user        Users        @relation("UserProjects", fields: [userId], references: [id])
   bids        Bids[]       @relation("ProjectBids")
+  images      Images[]     @relation("ProjectImages")
 }
 
 model Bids {
@@ -64,4 +65,12 @@ enum ProjectTypes {
   RENOVATION
   OUTDOOR_PROJECT
   OTHER
+}
+
+model Images {
+  id        String   @id @default(uuid())
+  url       String
+  public_id String
+  projectId String
+  project   Projects @relation("ProjectImages", fields: [projectId], references: [id])
 }

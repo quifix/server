@@ -11,7 +11,7 @@ class UserController {
    * @route   GET /api/users
    * @access  Private
    */
-  async getAllUsers(
+  async userGetAll(
     _req: Request,
     res: Response,
     next: NextFunction
@@ -46,7 +46,7 @@ class UserController {
    * @route   GET /api/users/:id
    * @access  Private
    */
-  async getUser(
+  async userGetById(
     req: Request,
     res: Response,
     next: NextFunction
@@ -90,7 +90,7 @@ class UserController {
    * @route   PUT /api/users/:id
    * @access  Private
    */
-  async updateUser(
+  async userUpdate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -126,7 +126,7 @@ class UserController {
    * @route     DELETE /api/users/:id
    * @access    Private
    */
-  async deleteUser(
+  async userDelete(
     req: Request,
     res: Response,
     next: NextFunction

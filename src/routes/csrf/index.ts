@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { AuthController } from '../../controllers';
+import { asyncHandler } from '../../middleware';
 
 export const router = express.Router();
 
@@ -9,4 +10,4 @@ export const router = express.Router();
  * @route   GET /api/csrf-token
  * @access  Private
  */
-router.get('/', AuthController.getCsrf);
+router.get('/', asyncHandler(AuthController.csrfGet));

@@ -11,7 +11,7 @@ class ProjectController {
    * @route     POST /api/projects
    * @access    Private
    */
-  async createProject(
+  async projectCreate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -36,7 +36,7 @@ class ProjectController {
    * @route     GET /api/projects
    * @access    Private
    */
-  async getAllProjects(req: Request, res: Response): Promise<void> {
+  async projectGetAll(req: Request, res: Response): Promise<void> {
     const projects: Projects[] = await prisma.projects.findMany();
     res.status(200).json(projects);
   }
@@ -46,7 +46,7 @@ class ProjectController {
    * @route     GET /api/projects/:id
    * @access    Private
    */
-  async getProject(
+  async projectGetById(
     req: Request,
     res: Response,
     next: NextFunction
@@ -77,7 +77,7 @@ class ProjectController {
    * @route     PUT /api/projects/:id
    * @access    Private
    */
-  async updateProject(
+  async projectEdit(
     req: Request,
     res: Response,
     next: NextFunction
@@ -121,7 +121,7 @@ class ProjectController {
    * @route     DELETE /api/projects/:id
    * @access    Private
    */
-  async deleteProject(
+  async projectDelete(
     req: Request,
     res: Response,
     next: NextFunction

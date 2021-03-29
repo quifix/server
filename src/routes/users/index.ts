@@ -2,6 +2,7 @@ import express from 'express';
 
 import { UserController } from '../../controllers';
 import {
+  asyncHandler,
   idParamValidation,
   userUpdateValidation,
   verifyUserId
@@ -14,14 +15,14 @@ export const router = express.Router();
  * @route   GET /api/users
  * @access  Private
  */
-router.get('/', UserController.getAllUsers);
+router.get('/', asyncHandler(UserController.userGetAll));
 
 /**
  * @desc    Get a single user by id
  * @route   GET /api/users/:id
  * @access  Private
  */
-router.get('/:id', idParamValidation, UserController.getUser);
+router.get('/:id', idParamValidation, asyncHandler(UserController.userGetById));
 
 /**
  * @desc    Update a single user
@@ -33,7 +34,7 @@ router.put(
   idParamValidation,
   userUpdateValidation,
   verifyUserId,
-  UserController.updateUser
+  asyncHandler(UserController.userUpdate)
 );
 
 /**
@@ -45,5 +46,5 @@ router.delete(
   '/:id',
   idParamValidation,
   verifyUserId,
-  UserController.deleteUser
+  asyncHandler(UserController.userDelete)
 );

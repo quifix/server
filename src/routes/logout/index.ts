@@ -1,6 +1,7 @@
 import express from 'express';
 
 import { AuthController } from '../../controllers';
+import { asyncHandler } from '../../middleware';
 
 export const router = express.Router();
 
@@ -9,4 +10,4 @@ export const router = express.Router();
  * @route   POST /api/logout
  * @access  Private
  */
-router.post('/', AuthController.logout);
+router.post('/', asyncHandler(AuthController.logout));

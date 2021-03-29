@@ -11,7 +11,7 @@ class BidController {
    * @route     POST /api/bids/
    * @access    Private
    */
-  async createBid(
+  async bidCreate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -66,7 +66,7 @@ class BidController {
    * @route    GET /api/bids
    * @access   Private
    */
-  async getAllBids(
+  async bidGetAll(
     _req: Request,
     res: Response,
     next: NextFunction
@@ -88,7 +88,11 @@ class BidController {
    * @route     GET /api/bids/:id
    * @access    Private
    */
-  async getBid(req: Request, res: Response, next: NextFunction): Promise<void> {
+  async bidGetById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
     try {
       const id: string = req.params.id;
       const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
@@ -113,7 +117,7 @@ class BidController {
    * @route     PUT /api/bids/:id
    * @access    Private
    */
-  async updateBid(
+  async bidUpdate(
     req: Request,
     res: Response,
     next: NextFunction
@@ -156,7 +160,7 @@ class BidController {
    * @route     DELETE /api/bids/:id
    * @access    Private
    */
-  async deleteBid(
+  async bidDelete(
     req: Request,
     res: Response,
     next: NextFunction

@@ -96,7 +96,7 @@ class AuthController {
    * @route   GET /api/csrf-token
    * @access  Private
    */
-  async getCsrf(
+  async csrfGet(
     req: Request,
     res: Response,
     next: NextFunction
