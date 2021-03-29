@@ -52,7 +52,7 @@ class UserController {
         state: true,
         country: true,
         type: true,
-        income: true,
+        income: req.auth0User.sub === id ? true : false,
         walletId: req.auth0User.sub === id ? true : false
       }
     });
