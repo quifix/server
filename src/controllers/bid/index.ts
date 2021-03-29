@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Bids, Projects, Users } from '@prisma/client';
 
 import prisma from '../../data';
-import { verifyOwnership, verifyUserType } from '../../middleware';
+import { verifyOwnership, verifyUserType } from '../../lib';
 import ApiError from '../error';
 
 class BidController {

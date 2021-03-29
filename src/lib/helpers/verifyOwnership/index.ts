@@ -1,4 +1,4 @@
-import { Bids, Projects } from '.prisma/client';
+import { Bids, Projects } from '@prisma/client';
 
 export const verifyOwnership = async (
   item: Projects | Bids,

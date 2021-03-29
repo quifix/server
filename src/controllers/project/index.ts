@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Projects } from '@prisma/client';
 
 import prisma from '../../data';
-import { verifyOwnership } from '../../middleware';
+import { verifyOwnership } from '../../lib';
 import ApiError from '../error';
 
 class ProjectController {
