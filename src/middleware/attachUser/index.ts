@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import jwtDecode from 'jwt-decode';
+
 import { ApiError } from '../../controllers';
 import { IDToken } from '../../lib';
 
