@@ -20,7 +20,7 @@ const csrfProtection = csrf({ cookie: true });
 
 app.use(express.json());
 app.use(helmet());
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
