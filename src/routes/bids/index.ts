@@ -24,7 +24,7 @@ router.get('/', BidController.getAllBids);
  * @route     GET /api/bids/:id
  * @access    Private
  */
-router.get('/:id', BidController.getBid);
+router.get('/:id', idParamValidation, BidController.getBid);
 
 /**
  * @desc      Update an exisiting bid by the owner of the bid.

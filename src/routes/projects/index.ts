@@ -31,7 +31,12 @@ router.get('/:id', idParamValidation, ProjectController.getProject);
  * @route     PUT /api/projects/:id
  * @access    Private
  */
-router.put('/:id', idParamValidation, ProjectController.updateProject);
+router.put(
+  '/:id',
+  idParamValidation,
+  projectValidation,
+  ProjectController.updateProject
+);
 
 /**
  * @desc      Delete a project owned by the viewer
