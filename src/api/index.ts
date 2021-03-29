@@ -24,7 +24,7 @@ app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
 app.use(cookieParser());
 app.use(morgan('dev'));
 
-app.get('/api', async (_req: Request, res: Response) => {
+app.get('/', async (_req: Request, res: Response) => {
   res.status(200).json({ message: 'Hello World!' });
 });
 
