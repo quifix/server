@@ -7,6 +7,6 @@ export const router = express.Router();
 /**
  * @desc    Get csrf token.
  * @route   GET /api/csrf-token
- * @access  Public
+ * @access  Private
  */
 router.get('/', AuthController.getCsrf);
