@@ -10,12 +10,18 @@ export const apiErrorHandler = (
   res: Response,
   _next: NextFunction
 ): void => {
-  logger.error(err);
+  const stack = process.env.NODE_ENV === 'production' ? null : err.stack;
+
+  const message = { message: err.message, stack };
+  logger.error(JSON.stringify(message));
 
   if (err instanceof ApiError) {
-    res.status(err.code).json(err.message);
+    res.status(err.code).json(message);
     return;
   }
 
-  res.status(500).json("We've encounted an error. Please try again later!");
+  res.status(500).json({
+    message: "We've encounted an error. Please try again later!",
+    stack
+  });
 };
