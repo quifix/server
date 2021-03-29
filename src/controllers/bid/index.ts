@@ -43,6 +43,12 @@ class BidController {
             res.status(201).json(bid);
           }
         }
+      } else {
+        next(
+          ApiError.badRequest(
+            'Bad request. This project is only open to contractors and handymen!'
+          )
+        );
       }
     }
   }

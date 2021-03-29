@@ -6,7 +6,7 @@ import { ApiError } from '../../controllers';
 // Validation to update an existing user
 export const userUpdateValidation = async (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -33,8 +33,8 @@ export const userUpdateValidation = async (
       req.body = result;
       next();
     }
-  } catch (error) {
-    next(ApiError.validationError(error));
+  } catch ({ errors }) {
+    next(ApiError.validationError(errors[0]));
     return;
   }
 };
@@ -42,7 +42,7 @@ export const userUpdateValidation = async (
 // Validation for the request param id.
 export const idParamValidation = async (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -59,15 +59,16 @@ export const idParamValidation = async (
       req.params.id = result;
       next();
     }
-  } catch (error) {
-    next(ApiError.validationError(error));
+  } catch ({ errors }) {
+    next(ApiError.validationError(errors[0]));
+    return;
   }
 };
 
 // Validation to update an existing project
 export const projectValidation = async (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -117,15 +118,16 @@ export const projectValidation = async (
         next();
       }
     }
-  } catch (error) {
-    next(ApiError.validationError(error));
+  } catch ({ errors }) {
+    next(ApiError.validationError(errors[0]));
+    return;
   }
 };
 
 // Validation to create and update a bid
 export const bidValidation = async (
   req: Request,
-  _res: Response,
+  res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -167,7 +169,8 @@ export const bidValidation = async (
         next();
       }
     }
-  } catch (error) {
-    next(ApiError.validationError(error));
+  } catch ({ errors }) {
+    next(ApiError.validationError(errors[0]));
+    return;
   }
 };
