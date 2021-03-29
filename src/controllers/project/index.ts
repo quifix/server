@@ -11,10 +11,24 @@ class ProjectController {
    * @route     POST /api/projects
    * @access    Private
    */
-  async createProject(req: Request, res: Response): Promise<void> {
-    const project: Projects = await prisma.projects.create({ data: req.body });
+  async createProject(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const project: Projects = await prisma.projects.create({
+        data: req.body
+      });
 
-    res.status(200).json(project);
+      res.status(200).json(project);
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
+    }
   }
 
   /**
@@ -37,16 +51,24 @@ class ProjectController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const id: string = req.params.id;
-    const project: Projects | null = await prisma.projects.findUnique({
-      where: { id }
-    });
+    try {
+      const id: string = req.params.id;
+      const project: Projects | null = await prisma.projects.findUnique({
+        where: { id }
+      });
 
-    if (!project) {
-      next(ApiError.notFound('Project not found.'));
-      return;
-    } else {
-      res.status(200).json(project);
+      if (!project) {
+        next(ApiError.notFound('Project not found.'));
+        return;
+      } else {
+        res.status(200).json(project);
+      }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 
@@ -60,29 +82,37 @@ class ProjectController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const id: string = req.params.id;
-    const project: Projects | null = await prisma.projects.findUnique({
-      where: { id }
-    });
+    try {
+      const id: string = req.params.id;
+      const project: Projects | null = await prisma.projects.findUnique({
+        where: { id }
+      });
 
-    if (!project) {
-      next(ApiError.notFound('Project not found.'));
-      return;
-    } else {
-      if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
-        const updatedProject: Projects = await prisma.projects.update({
-          where: { id: project.id },
-          data: { ...req.body }
-        });
-
-        res.status(200).json(updatedProject);
+      if (!project) {
+        next(ApiError.notFound('Project not found.'));
+        return;
       } else {
-        next(
-          ApiError.invalidCredentials(
-            'Access denied! You do not own this project.'
-          )
-        );
+        if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
+          const updatedProject: Projects = await prisma.projects.update({
+            where: { id: project.id },
+            data: { ...req.body }
+          });
+
+          res.status(200).json(updatedProject);
+        } else {
+          next(
+            ApiError.invalidCredentials(
+              'Access denied! You do not own this project.'
+            )
+          );
+        }
       }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 
@@ -96,24 +126,32 @@ class ProjectController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const id: string = req.params.id;
-    const project: Projects | null = await prisma.projects.findUnique({
-      where: { id }
-    });
+    try {
+      const id: string = req.params.id;
+      const project: Projects | null = await prisma.projects.findUnique({
+        where: { id }
+      });
 
-    if (!project) {
-      next(ApiError.notFound('Project not found.'));
-    } else {
-      if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
-        await prisma.projects.delete({ where: { id: project.id } });
-        res.status(204).end();
+      if (!project) {
+        next(ApiError.notFound('Project not found.'));
       } else {
-        next(
-          ApiError.invalidCredentials(
-            'Access denied! You do not own this project.'
-          )
-        );
+        if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
+          await prisma.projects.delete({ where: { id: project.id } });
+          res.status(204).end();
+        } else {
+          next(
+            ApiError.invalidCredentials(
+              'Access denied! You do not own this project.'
+            )
+          );
+        }
       }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 }

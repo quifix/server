@@ -18,8 +18,8 @@ import {
 const app = express();
 const csrfProtection = csrf({ cookie: true });
 
-app.use(helmet());
 app.use(express.json());
+app.use(helmet());
 app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
 app.use(cookieParser());
 app.use(morgan('dev'));

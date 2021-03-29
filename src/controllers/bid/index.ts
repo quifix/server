@@ -16,40 +16,48 @@ class BidController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const user: Users | null = await prisma.users.findUnique({
-      where: { id: req.userID || '' }
-    });
+    try {
+      const user: Users | null = await prisma.users.findUnique({
+        where: { id: req.userID || '' }
+      });
 
-    if (!user) {
-      next(ApiError.notFound('User not found.'));
-      return;
-    } else {
-      if (verifyUserType(user) === true) {
-        const project: Projects | null = await prisma.projects.findUnique({
-          where: { id: req.body.projectId }
-        });
-
-        if (project) {
-          if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
-            next(
-              ApiError.badRequest(
-                'Bad request. Bid on personal project not allowed'
-              )
-            );
-            return;
-          } else {
-            const bid: Bids = await prisma.bids.create({ data: req.body });
-
-            res.status(201).json(bid);
-          }
-        }
+      if (!user) {
+        next(ApiError.notFound('User not found.'));
+        return;
       } else {
-        next(
-          ApiError.badRequest(
-            'Bad request. This project is only open to contractors and handymen!'
-          )
-        );
+        if (verifyUserType(user) === true) {
+          const project: Projects | null = await prisma.projects.findUnique({
+            where: { id: req.body.projectId }
+          });
+
+          if (project) {
+            if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
+              next(
+                ApiError.badRequest(
+                  'Bad request. Bid on personal project not allowed'
+                )
+              );
+              return;
+            } else {
+              const bid: Bids = await prisma.bids.create({ data: req.body });
+
+              res.status(201).json(bid);
+            }
+          }
+        } else {
+          next(
+            ApiError.badRequest(
+              'Bad request. This project is only open to contractors and handymen!'
+            )
+          );
+        }
       }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 
@@ -58,9 +66,21 @@ class BidController {
    * @route    GET /api/bids
    * @access   Private
    */
-  async getAllBids(req: Request, res: Response): Promise<void> {
-    const bids: Bids[] = await prisma.bids.findMany();
-    res.status(200).json(bids);
+  async getAllBids(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const bids: Bids[] = await prisma.bids.findMany();
+      res.status(200).json(bids);
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
+    }
   }
 
   /**
@@ -69,16 +89,25 @@ class BidController {
    * @access    Private
    */
   async getBid(req: Request, res: Response, next: NextFunction): Promise<void> {
-    const id: string = req.params.id;
-    const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
+    try {
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
 
-    if (!bid) {
-      next(ApiError.notFound('Bid not found.'));
-      return;
-    } else {
-      res.status(200).json(bid);
+      if (!bid) {
+        next(ApiError.notFound('Bid not found.'));
+        return;
+      } else {
+        res.status(200).json(bid);
+      }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
+
   /**
    * @desc      Update an exisiting bid by the owner of the bid.
    * @route     PUT /api/bids/:id
@@ -89,26 +118,36 @@ class BidController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const id: string = req.params.id;
-    const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
+    try {
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
 
-    if (!bid) {
-      next(ApiError.notFound('Bid not found.'));
-      return;
-    } else {
-      if ((await verifyOwnership(bid, req.auth0User.sub)) === true) {
-        const updatedBid: Bids = await prisma.bids.update({
-          where: { id: bid.id },
-          data: { ...req.body }
-        });
-
-        res.status(200).json(updatedBid);
-      } else {
-        next(
-          ApiError.invalidCredentials('Access denied! You do not own this bid.')
-        );
+      if (!bid) {
+        next(ApiError.notFound('Bid not found.'));
         return;
+      } else {
+        if ((await verifyOwnership(bid, req.auth0User.sub)) === true) {
+          const updatedBid: Bids = await prisma.bids.update({
+            where: { id: bid.id },
+            data: { ...req.body }
+          });
+
+          res.status(200).json(updatedBid);
+        } else {
+          next(
+            ApiError.invalidCredentials(
+              'Access denied! You do not own this bid.'
+            )
+          );
+          return;
+        }
       }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 
@@ -122,23 +161,33 @@ class BidController {
     res: Response,
     next: NextFunction
   ): Promise<void> {
-    const id: string = req.params.id;
-    const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
+    try {
+      const id: string = req.params.id;
+      const bid: Bids | null = await prisma.bids.findUnique({ where: { id } });
 
-    if (!bid) {
-      next(ApiError.notFound('Bid not found.'));
-      return;
-    } else {
-      if ((await verifyOwnership(bid, req.auth0User.sub)) === true) {
-        await prisma.bids.delete({ where: { id: bid.id } });
-
-        res.status(204).end();
-      } else {
-        next(
-          ApiError.invalidCredentials('Access denied! You do not own this bid.')
-        );
+      if (!bid) {
+        next(ApiError.notFound('Bid not found.'));
         return;
+      } else {
+        if ((await verifyOwnership(bid, req.auth0User.sub)) === true) {
+          await prisma.bids.delete({ where: { id: bid.id } });
+
+          res.status(204).end();
+        } else {
+          next(
+            ApiError.invalidCredentials(
+              'Access denied! You do not own this bid.'
+            )
+          );
+          return;
+        }
       }
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
     }
   }
 }
