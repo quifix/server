@@ -12,7 +12,7 @@ class UserController {
    * @access  Private
    */
   async getAllUsers(
-    req: Request,
+    _req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {

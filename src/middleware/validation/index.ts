@@ -6,7 +6,7 @@ import { ApiError } from '../../controllers';
 // Validation to update an existing user
 export const userUpdateValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -42,7 +42,7 @@ export const userUpdateValidation = async (
 // Validation for the request param id.
 export const idParamValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -68,7 +68,7 @@ export const idParamValidation = async (
 // Validation to update an existing project
 export const projectValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
@@ -127,7 +127,7 @@ export const projectValidation = async (
 // Validation to create and update a bid
 export const bidValidation = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {

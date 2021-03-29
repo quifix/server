@@ -18,7 +18,7 @@ class BidController {
   ): Promise<void> {
     try {
       const user: Users | null = await prisma.users.findUnique({
-        where: { id: req.userID || '' }
+        where: { id: req.auth0User.sub }
       });
 
       if (!user) {
@@ -53,7 +53,7 @@ class BidController {
         }
       }
     } catch (error) {
-      return next(
+      next(
         ApiError.internal(
           "We've encounted an internal error. Please try again later!"
         )
