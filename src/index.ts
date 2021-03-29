@@ -10,5 +10,5 @@ server.listen(port);
 console.log(`
     🚀 Server is Running!
     🔉 Listening on port ${port}
-    📭 API at http://localhost:${port}
+    📭 API at http://localhost:${port}/api
 `);
