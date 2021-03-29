@@ -106,6 +106,7 @@ class ProjectController {
     } else {
       if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
         await prisma.projects.delete({ where: { id: project.id } });
+        res.status(204).end();
       } else {
         next(
           ApiError.invalidCredentials(
