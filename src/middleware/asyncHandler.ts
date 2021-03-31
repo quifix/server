@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ApiError } from '../../controllers';
+import { ApiError } from '../controllers';
 
 export const asyncHandler = (
   controller: (req: Request, res: Response, next: NextFunction) => void

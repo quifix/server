@@ -1,8 +1,8 @@
 import * as yup from 'yup';
 import { NextFunction, Request, Response } from 'express';
 
-import { BidArgs, ProjectArgs, UserUpdateArgs } from '../../lib/types/express';
-import { ApiError } from '../../controllers';
+import { BidArgs, ProjectArgs, UserUpdateArgs } from '../lib/types/express';
+import { ApiError } from '../controllers';
 
 // Validation to update an existing user
 export const userUpdateValidation = async (

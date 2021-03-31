@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
 
-import { logger } from '../../lib';
-import { ApiError } from '../../controllers';
+import { logger } from '../lib';
+import { ApiError } from '../controllers';
 
 export const apiErrorHandler = (
   err: Error,
