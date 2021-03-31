@@ -1,29 +1,47 @@
 import { Bids, Projects, Users, UserTypes } from '@prisma/client';
 
 import { UserDao } from '../dao';
-import { UserData } from '../lib/types/express';
+import { ManyUsers } from '../lib/types/express';
 
-const register = async (data: UserData): Promise<Users> => {
+const findUsers = async (): Promise<ManyUsers[]> => {
   try {
-    const user = await UserDao.createUser(
-      data.sub,
-      data.nickname,
-      data.email,
-      data.picture
-    );
-
-    return user;
+    const users: ManyUsers[] = await UserDao.findAll();
+    return users;
   } catch (error) {
-    return Promise.reject('Internal error');
+    return Promise.reject('Internal error.');
   }
 };
 
-const findUnique = async (id: string): Promise<Users | null> => {
+const findUserByID = async (
+  id: string,
+  viewerID?: string
+): Promise<Users | null> => {
   try {
-    const user = await UserDao.fidUserById(id);
+    const user: Users | null = await UserDao.findById(id, viewerID);
+
+    return user ? user : Promise.reject('User not found.');
+  } catch (error) {
+    return Promise.reject('Internal error.');
+  }
+};
+
+const editUser = async (id: string, update: Users): Promise<Users> => {
+  try {
+    const user: Users = await UserDao.edit(id, update);
+
     return user;
   } catch (error) {
-    return Promise.reject('user not found.');
+    return Promise.reject('Internal error.');
+  }
+};
+
+const deleteUser = async (id: string): Promise<string> => {
+  try {
+    const done: boolean = await UserDao.destroy(id);
+
+    return done ? 'Success!' : Promise.reject('User not found.');
+  } catch (error) {
+    return Promise.reject('Internal error.');
   }
 };
 
@@ -46,4 +64,11 @@ const verifyUserType = async (user: Users): Promise<boolean> => {
   }
 };
 
-export default { findUnique, register, verifyOwnership, verifyUserType };
+export default {
+  deleteUser,
+  editUser,
+  findUserByID,
+  findUsers,
+  verifyOwnership,
+  verifyUserType
+};

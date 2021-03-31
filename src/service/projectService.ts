@@ -16,7 +16,7 @@ const findProjects = async (): Promise<Projects[]> => {
     const projects: Projects[] = await ProjectDao.findAll();
     return projects;
   } catch (error) {
-    return Promise.reject('Internal error');
+    return Promise.reject('Internal error.');
   }
 };
 

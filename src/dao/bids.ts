@@ -1,6 +1,6 @@
 import { Bids } from '@prisma/client';
 
-import prisma from '../db';
+import { prisma } from '../db';
 
 class BidDAO {
   // Create Bid

@@ -1,6 +1,6 @@
 import { Projects } from '@prisma/client';
 
-import prisma from '../db';
+import { prisma } from '../db';
 
 class ProjectDAO {
   // Create Project

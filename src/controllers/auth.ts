@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 import axios from 'axios';
 
-import { userService } from '../service';
+import { authService } from '../service';
 import ApiError from './error';
 import { UserData } from '../lib/types/express';
 
@@ -32,14 +32,14 @@ class AuthController {
 
         data.sub = data.sub.slice(6);
 
-        const user: Users | null = await userService.findUnique(data.sub);
+        const user: Users | null = await authService.login(data.sub);
 
         if (user) {
           req.headers.authorization = '';
 
           res.status(200).json(user);
         } else {
-          const user: Users = await userService.register(data);
+          const user: Users = await authService.register(data);
 
           req.headers.authorization = '';
 

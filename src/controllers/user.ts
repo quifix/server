@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 
-import prisma from '../db';
+import { prisma } from '../db';
 import ApiError from './error';
 import { ManyUsers } from '../lib/types/express';
+import { userService } from '../service';
 
 class UserController {
   /**
@@ -17,19 +18,7 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users: ManyUsers[] = await prisma.users.findMany({
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
-          email: true,
-          address: true,
-          city: true,
-          state: true,
-          country: true,
-          type: true
-        }
-      });
+      const users: ManyUsers[] = await userService.findUsers();
 
       res.status(200).json(users);
     } catch (error) {

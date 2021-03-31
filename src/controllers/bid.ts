@@ -16,7 +16,7 @@ class BidController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: Users | null = await userService.findUnique(
+      const user: Users | null = await userService.findUserByID(
         req.auth0User.sub
       );
 
