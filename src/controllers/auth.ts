@@ -1,9 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
-import { Users, UserTypes } from '@prisma/client';
+import { Users } from '@prisma/client';
 import axios from 'axios';
 
-import prisma from '../../data';
-import ApiError from '../error';
+import { userService } from '../service';
+import ApiError from './error';
+import { UserData } from '../lib/types/express';
 
 class AuthController {
   /**
@@ -25,34 +26,24 @@ class AuthController {
         axios.defaults.headers['content-type'] = 'application/json';
         axios.defaults.headers['authorization'] = `Bearer ${token}`;
 
-        const { data } = await axios.get(
+        const { data }: { data: UserData } = await axios.get(
           `${process.env.ISSUER_BASE_URL}/userinfo`
         );
 
         data.sub = data.sub.slice(6);
 
-        const user: Users | null = await prisma.users.findUnique({
-          where: { id: data.sub }
-        });
+        const user: Users | null = await userService.findUnique(data.sub);
 
         if (user) {
+          req.headers.authorization = '';
+
           res.status(200).json(user);
         } else {
-          const { sub: id, nickname: name, email, picture: avatar } = data;
+          const user: Users = await userService.register(data);
 
-          const type = UserTypes.CUSTOMER;
+          req.headers.authorization = '';
 
-          const result: Users = await prisma.users.create({
-            data: {
-              id,
-              name,
-              email,
-              avatar,
-              type
-            }
-          });
-
-          res.status(201).json(result);
+          res.status(201).json(user);
         }
       } else {
         return next(

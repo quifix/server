@@ -8,6 +8,13 @@ export interface Auth0User {
   email_verified: string;
 }
 
+export interface UserData {
+  sub: string;
+  nickname: string;
+  email: string;
+  picture: string;
+}
+
 export interface UserUpdateArgs {
   name?: string;
   email?: string;

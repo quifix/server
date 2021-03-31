@@ -17,12 +17,14 @@ export const router = express.Router();
  */
 router.get('/', asyncHandler(UserController.userGetAll));
 
+router.use(idParamValidation);
+
 /**
  * @desc    Get a single user by id
  * @route   GET /api/users/:id
  * @access  Private
  */
-router.get('/:id', idParamValidation, asyncHandler(UserController.userGetById));
+router.get('/:id', asyncHandler(UserController.userGetById));
 
 /**
  * @desc    Update a single user
@@ -31,7 +33,6 @@ router.get('/:id', idParamValidation, asyncHandler(UserController.userGetById));
  */
 router.put(
   '/:id',
-  idParamValidation,
   userUpdateValidation,
   verifyUserId,
   asyncHandler(UserController.userUpdate)
@@ -42,9 +43,4 @@ router.put(
  * @route     DELETE /api/users/:id
  * @access    Private
  */
-router.delete(
-  '/:id',
-  idParamValidation,
-  verifyUserId,
-  asyncHandler(UserController.userDelete)
-);
+router.delete('/:id', verifyUserId, asyncHandler(UserController.userDelete));

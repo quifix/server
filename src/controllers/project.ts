@@ -1,9 +1,8 @@
 import { NextFunction, Request, Response } from 'express';
 import { Projects } from '@prisma/client';
 
-import prisma from '../../data';
-import { verifyOwnership } from '../../lib';
-import ApiError from '../error';
+import { projectService, userService } from '../service';
+import ApiError from './error';
 
 class ProjectController {
   /**
@@ -17,9 +16,7 @@ class ProjectController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const project: Projects = await prisma.projects.create({
-        data: req.body
-      });
+      const project: Projects = await projectService.createProject(req.body);
 
       res.status(200).json(project);
     } catch (error) {
@@ -36,9 +33,22 @@ class ProjectController {
    * @route     GET /api/projects
    * @access    Private
    */
-  async projectGetAll(req: Request, res: Response): Promise<void> {
-    const projects: Projects[] = await prisma.projects.findMany();
-    res.status(200).json(projects);
+  async projectGetAll(
+    _req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const projects: Projects[] = await projectService.findProjects();
+
+      res.status(200).json(projects);
+    } catch (error) {
+      return next(
+        ApiError.internal(
+          "We've encounted an internal error. Please try again later!"
+        )
+      );
+    }
   }
 
   /**
@@ -53,13 +63,11 @@ class ProjectController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const project: Projects | null = await prisma.projects.findUnique({
-        where: { id }
-      });
+
+      const project: Projects | null = await projectService.findProjectByID(id);
 
       if (!project) {
-        next(ApiError.notFound('Project not found.'));
-        return;
+        return next(ApiError.notFound('Project not found.'));
       } else {
         res.status(200).json(project);
       }
@@ -84,23 +92,23 @@ class ProjectController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const project: Projects | null = await prisma.projects.findUnique({
-        where: { id }
-      });
+      const project: Projects | null = await projectService.findProjectByID(id);
 
       if (!project) {
-        next(ApiError.notFound('Project not found.'));
-        return;
+        return next(ApiError.notFound('Project not found.'));
       } else {
-        if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
-          const updatedProject: Projects = await prisma.projects.update({
-            where: { id: project.id },
-            data: { ...req.body }
-          });
+        if (
+          (await userService.verifyOwnership(project, req.auth0User.sub)) ===
+          true
+        ) {
+          const updatedProject: Projects = await projectService.editProject(
+            id,
+            req.body
+          );
 
           res.status(200).json(updatedProject);
         } else {
-          next(
+          return next(
             ApiError.invalidCredentials(
               'Access denied! You do not own this project.'
             )
@@ -128,18 +136,19 @@ class ProjectController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const project: Projects | null = await prisma.projects.findUnique({
-        where: { id }
-      });
+      const project: Projects | null = await projectService.findProjectByID(id);
 
       if (!project) {
         next(ApiError.notFound('Project not found.'));
       } else {
-        if ((await verifyOwnership(project, req.auth0User.sub)) === true) {
-          await prisma.projects.delete({ where: { id: project.id } });
+        if (
+          (await userService.verifyOwnership(project, req.auth0User.sub)) ===
+          true
+        ) {
+          await projectService.deleteProject(id);
           res.status(204).end();
         } else {
-          next(
+          return next(
             ApiError.invalidCredentials(
               'Access denied! You do not own this project.'
             )

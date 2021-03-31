@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 
-import prisma from '../../data';
-import ApiError from '../error';
-import { ManyUsers } from '../../lib/types/express';
+import prisma from '../db';
+import ApiError from './error';
+import { ManyUsers } from '../lib/types/express';
 
 class UserController {
   /**

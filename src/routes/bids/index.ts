@@ -23,12 +23,14 @@ router.post('/', bidValidation, asyncHandler(BidController.bidCreate));
  */
 router.get('/', asyncHandler(BidController.bidGetAll));
 
+router.use(idParamValidation);
+
 /**
  * @desc      Get a single bid by id
  * @route     GET /api/bids/:id
  * @access    Private
  */
-router.get('/:id', idParamValidation, asyncHandler(BidController.bidGetById));
+router.get('/:id', asyncHandler(BidController.bidGetById));
 
 /**
  * @desc      Update an exisiting bid by the owner of the bid.
@@ -37,7 +39,7 @@ router.get('/:id', idParamValidation, asyncHandler(BidController.bidGetById));
  */
 router.put(
   '/:id',
-  idParamValidation,
+
   bidValidation,
   asyncHandler(BidController.bidUpdate)
 );
@@ -47,4 +49,4 @@ router.put(
  * @route     DELETE /api/bids/:id
  * @access    Private
  */
-router.delete('/:id', idParamValidation, asyncHandler(BidController.bidDelete));
+router.delete('/:id', asyncHandler(BidController.bidDelete));

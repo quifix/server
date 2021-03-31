@@ -3,6 +3,7 @@ export default class ApiError {
   message: string;
 
   /**
+   *
    * @param code status of the error that needs to be returned.
    * @param message description summary of the encounted error.
    */
@@ -45,6 +46,7 @@ export default class ApiError {
   static validationError(msg: string): ApiError {
     return new ApiError(422, msg);
   }
+
   /**
    *
    * @param msg

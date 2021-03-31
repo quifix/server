@@ -31,16 +31,14 @@ router.post(
  */
 router.get('/', asyncHandler(ProjectController.projectGetAll));
 
+router.use(idParamValidation);
+
 /**
  * @desc      Get a single project
  * @route     GET /api/projects/:id
  * @access    Private
  */
-router.get(
-  '/:id',
-  idParamValidation,
-  asyncHandler(ProjectController.projectGetById)
-);
+router.get('/:id', asyncHandler(ProjectController.projectGetById));
 
 /**
  * @desc      Update a project owned by the viewer
@@ -49,7 +47,6 @@ router.get(
  */
 router.put(
   '/:id',
-  idParamValidation,
   projectValidation,
   asyncHandler(ProjectController.projectEdit)
 );
@@ -59,8 +56,4 @@ router.put(
  * @route     DELETE /api/projects/:id
  * @access    Private
  */
-router.delete(
-  '/:id',
-  idParamValidation,
-  asyncHandler(ProjectController.projectDelete)
-);
+router.delete('/:id', asyncHandler(ProjectController.projectDelete));
