@@ -51,7 +51,6 @@ class AuthController {
         );
       }
     } catch (error) {
-      console.error(error);
       return next(
         ApiError.internal(
           "We've encounted an internal error. Please try again later!"
