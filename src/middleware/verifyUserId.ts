@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { ApiError } from 'src/controllers';
+import { ApiError } from '../controllers';
 
 export const verifyUserId = async (
   req: Request,
