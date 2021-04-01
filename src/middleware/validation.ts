@@ -35,8 +35,7 @@ export const userUpdateValidation = async (
       next();
     }
   } catch ({ errors }) {
-    next(ApiError.validationError(errors[0]));
-    return;
+    return next(ApiError.validationError(errors[0]));
   }
 };
 
@@ -61,8 +60,7 @@ export const idParamValidation = async (
       next();
     }
   } catch ({ errors }) {
-    next(ApiError.validationError(errors[0]));
-    return;
+    return next(ApiError.validationError(errors[0]));
   }
 };
 
@@ -120,8 +118,7 @@ export const projectValidation = async (
       }
     }
   } catch ({ errors }) {
-    next(ApiError.validationError(errors[0]));
-    return;
+    return next(ApiError.validationError(errors[0]));
   }
 };
 
@@ -171,7 +168,6 @@ export const bidValidation = async (
       }
     }
   } catch ({ errors }) {
-    next(ApiError.validationError(errors[0]));
-    return;
+    return next(ApiError.validationError(errors[0]));
   }
 };

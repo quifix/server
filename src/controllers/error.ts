@@ -21,6 +21,10 @@ export default class ApiError {
     return new ApiError(400, msg);
   }
 
+  static auth(msg: string): ApiError {
+    return new ApiError(401, msg);
+  }
+
   /**
    *
    * @param msg

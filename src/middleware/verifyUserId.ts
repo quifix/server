@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import { ApiError } from 'src/controllers';
 
 export const verifyUserId = async (
   req: Request,
@@ -12,9 +13,10 @@ export const verifyUserId = async (
     }
     res.status(403).json({ message: 'Unauthorized access!' });
   } catch (error) {
-    res.status(500).json({
-      message:
+    return next(
+      ApiError.internal(
         "We've encounted an error while verifying the user ID. Please try again later!"
-    });
+      )
+    );
   }
 };

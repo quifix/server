@@ -1,11 +1,16 @@
 import express, { Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
-import cors from 'cors';
 import csrf from 'csurf';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import { apiErrorHandler, attachUser, jwtCheck, notFound } from '../middleware';
+import {
+  apiErrorHandler,
+  attachUser,
+  cors,
+  jwtCheck,
+  notFound
+} from '../middleware';
 import {
   authRouter,
   bidsRouter,
@@ -21,7 +26,8 @@ const csrfProtection = csrf({ cookie: true });
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 app.use(helmet());
-app.use(cors({ origin: ['http://localhost:3000'], credentials: true }));
+app.options('*', cors);
+app.use(cors);
 app.use(cookieParser());
 app.use(morgan('dev'));
 

@@ -20,7 +20,7 @@ class AuthController {
         res.cookie('_token', token, {
           httpOnly: true,
           sameSite: true,
-          secure: true
+          secure: process.env.NODE_ENV === 'development' ? true : false
         });
 
         axios.defaults.headers['content-type'] = 'application/json';
@@ -43,7 +43,7 @@ class AuthController {
 
           req.headers.authorization = '';
 
-          res.status(201).json(user);
+          res.status(200).json(user);
         }
       } else {
         return next(
@@ -51,6 +51,7 @@ class AuthController {
         );
       }
     } catch (error) {
+      console.error(error);
       return next(
         ApiError.internal(
           "We've encounted an internal error. Please try again later!"
@@ -66,13 +67,19 @@ class AuthController {
    */
   async logout(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      const cookieOptions = { httpOnly: true, sameSite: true, secure: true };
+      const cookieOptions = {
+        httpOnly: true,
+        sameSite: true,
+        secure: process.env.NODE_ENV === 'development' ? true : false
+      };
 
       req.userID = null;
       req.auth0User = {};
       res.clearCookie('_token', cookieOptions);
+      res.clearCookie('_sessionId', cookieOptions);
       res.clearCookie('_csrf');
       res.status(204).end();
+      return;
     } catch (error) {
       return next(
         ApiError.internal(

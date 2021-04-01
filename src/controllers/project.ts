@@ -1,8 +1,15 @@
 import { NextFunction, Request, Response } from 'express';
-import { Projects } from '@prisma/client';
+import { Images, Projects } from '@prisma/client';
+import { UploadApiResponse } from 'cloudinary';
+import { v4 as uuid } from 'uuid';
 
-import { projectService, userService } from '../service';
+import { imageService, projectService, userService } from '../service';
 import ApiError from './error';
+import { cloudinary } from '../utils';
+
+interface ResponseProject extends Projects {
+  images?: Images[];
+}
 
 class ProjectController {
   /**
@@ -18,7 +25,29 @@ class ProjectController {
     try {
       const project: Projects = await projectService.createProject(req.body);
 
-      res.status(200).json(project);
+      if (req.files) {
+        for await (const file of Object.assign(req.files)) {
+          const {
+            url,
+            public_id
+          }: UploadApiResponse = await cloudinary.uploader.upload(file.path, {
+            upload_preset: process.env.CLOUDINARY_UPLOAD_PRESET
+          });
+
+          const newImage: Images = {
+            id: uuid(),
+            url,
+            public_id,
+            projectId: project.id
+          };
+
+          await imageService.addImage(newImage);
+        }
+
+        res.status(200).json(project);
+      } else {
+        res.status(200).json(project);
+      }
     } catch (error) {
       return next(
         ApiError.internal(
@@ -33,6 +62,7 @@ class ProjectController {
    * @route     GET /api/projects
    * @access    Private
    */
+
   async projectGetAll(
     _req: Request,
     res: Response,
@@ -41,7 +71,16 @@ class ProjectController {
     try {
       const projects: Projects[] = await projectService.findProjects();
 
-      res.status(200).json(projects);
+      for await (const project of projects) {
+        const foundProject: ResponseProject = project;
+
+        const images: Images[] = await imageService.findProjectImages(
+          foundProject.id
+        );
+        foundProject.images = images;
+
+        res.status(200).json(foundProject);
+      }
     } catch (error) {
       return next(
         ApiError.internal(
@@ -64,12 +103,23 @@ class ProjectController {
     try {
       const id: string = req.params.id;
 
-      const project: Projects | null = await projectService.findProjectByID(id);
+      const project: ResponseProject | null = await projectService.findProjectByID(
+        id
+      );
 
       if (!project) {
         return next(ApiError.notFound('Project not found.'));
       } else {
-        res.status(200).json(project);
+        const images: Images[] = await imageService.findProjectImages(
+          project.id
+        );
+
+        if (images) {
+          project.images = images;
+          res.status(200).json(project);
+        } else {
+          res.status(200).json(project);
+        }
       }
     } catch (error) {
       return next(
