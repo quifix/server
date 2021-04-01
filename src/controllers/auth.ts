@@ -76,7 +76,6 @@ class AuthController {
       req.userID = null;
       req.auth0User = {};
       res.clearCookie('_token', cookieOptions);
-      res.clearCookie('_sessionId', cookieOptions);
       res.clearCookie('_csrf');
       res.status(204).end();
       return;
