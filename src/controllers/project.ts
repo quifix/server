@@ -148,10 +148,7 @@ class ProjectController {
       if (!project) {
         return next(ApiError.notFound('Project not found.'));
       } else {
-        if (
-          (await userService.verifyOwnership(project, req.auth0User.sub)) ===
-          true
-        ) {
+        if ((await userService.verifyOwnership(project, req.userID)) === true) {
           const updatedProject: Projects = await projectService.editProject(
             id,
             req.body
@@ -192,10 +189,7 @@ class ProjectController {
       if (!project) {
         next(ApiError.notFound('Project not found.'));
       } else {
-        if (
-          (await userService.verifyOwnership(project, req.auth0User.sub)) ===
-          true
-        ) {
+        if ((await userService.verifyOwnership(project, req.userID)) === true) {
           await projectService.deleteProject(id);
           res.status(204).end();
         } else {

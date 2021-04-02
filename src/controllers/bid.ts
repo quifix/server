@@ -16,9 +16,7 @@ class BidController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: Users | null = await userService.findUserByID(
-        req.auth0User.sub
-      );
+      const user: Users | null = await userService.findUserByID(req.userID);
 
       if (!user) {
         return next(ApiError.notFound('User not found.'));
@@ -30,10 +28,7 @@ class BidController {
 
           if (project) {
             if (
-              (await userService.verifyOwnership(
-                project,
-                req.auth0User.sub
-              )) === true
+              (await userService.verifyOwnership(project, req.userID)) === true
             ) {
               next(
                 ApiError.badRequest(
@@ -133,9 +128,7 @@ class BidController {
       if (!bid) {
         return next(ApiError.notFound('Bid not found.'));
       } else {
-        if (
-          (await userService.verifyOwnership(bid, req.auth0User.sub)) === true
-        ) {
+        if ((await userService.verifyOwnership(bid, req.userID)) === true) {
           const updatedBid: Bids = await bidService.editBid(bid.id, req.body);
 
           res.status(200).json(updatedBid);
@@ -174,9 +167,7 @@ class BidController {
         next(ApiError.notFound('Bid not found.'));
         return;
       } else {
-        if (
-          (await userService.verifyOwnership(bid, req.auth0User.sub)) === true
-        ) {
+        if ((await userService.verifyOwnership(bid, req.userID)) === true) {
           await bidService.deleteBid(bid.id);
 
           res.status(204).end();

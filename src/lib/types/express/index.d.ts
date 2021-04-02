@@ -72,7 +72,6 @@ declare global {
   namespace Express {
     export interface Request {
       userID: string | null;
-      auth0User: Auth0User | Record<string, never>;
     }
   }
 }
