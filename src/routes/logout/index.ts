@@ -1,9 +1,9 @@
-import express from 'express';
+import { Router } from 'express';
 
 import { AuthController } from '../../controllers';
 import { asyncHandler } from '../../middleware';
 
-export const router = express.Router();
+export const router = Router();
 
 /**
  * @desc   Logout user

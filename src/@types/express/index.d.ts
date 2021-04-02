@@ -10,6 +10,16 @@ export interface Auth0User {
   email_verified: string;
 }
 
+export interface IDToken {
+  iss?: string;
+  sub: string;
+  aud?: [string];
+  azp?: string;
+  exp: number;
+  iat: number;
+  scope?: string;
+}
+
 export interface UserData {
   sub: string;
   nickname: string;
@@ -56,7 +66,7 @@ export interface BidArgs {
   accepted?: boolean;
 }
 
-export interface ManyUsers {
+export interface UsersResponse {
   id: string;
   name: string;
   avatar: string | null;

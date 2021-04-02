@@ -1,6 +1,6 @@
 import { Bids } from '@prisma/client';
 
-import { BidDao } from '../dao';
+import { BidDao } from '../daos';
 
 const createBid = async (data: Bids): Promise<Bids> => {
   try {

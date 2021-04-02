@@ -9,7 +9,7 @@
     "moduleResolution": "node",
     "baseUrl": ".",
     "typeRoots": [
-      "src/lib/types/express/index.d.ts", "node_modules/@types"
+      "src/shared/types/express/index.d.tsnode_modules/@types"
     ]
   },
   "exclude": ["node_modules", "dist","temp"],

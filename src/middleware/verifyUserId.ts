@@ -3,19 +3,20 @@ import { ApiError } from '../controllers';
 
 export const verifyUserId = async (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const id = req.params.id;
     if (id === req.userID) {
       next();
+    } else {
+      next(ApiError.unauthorized('Unauthorized access!'));
     }
-    res.status(403).json({ message: 'Unauthorized access!' });
   } catch (error) {
     return next(
       ApiError.internal(
-        "We've encounted an error while verifying the user ID. Please try again later!"
+        "We've encounted an  internal error. Please try again later!"
       )
     );
   }

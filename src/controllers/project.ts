@@ -2,10 +2,13 @@ import { NextFunction, Request, Response } from 'express';
 import { Images, Projects } from '@prisma/client';
 import { UploadApiResponse } from 'cloudinary';
 import { v4 as uuid } from 'uuid';
+import statusCodes from 'http-status-codes';
 
-import { imageService, projectService, userService } from '../service';
+import { imageService, projectService, userService } from '../entities';
 import ApiError from './error';
 import { cloudinary } from '../utils';
+
+const { CREATED, NO_CONTENT, OK } = statusCodes;
 
 interface ResponseProject extends Projects {
   images?: Images[];
@@ -44,9 +47,9 @@ class ProjectController {
           await imageService.addImage(newImage);
         }
 
-        res.status(200).json(project);
+        res.status(CREATED).json(project);
       } else {
-        res.status(200).json(project);
+        res.status(CREATED).json(project);
       }
     } catch (error) {
       return next(
@@ -81,7 +84,7 @@ class ProjectController {
         foundProject.images = images;
       }
 
-      res.status(200).json(projects);
+      res.status(OK).json(projects);
     } catch (error) {
       return next(
         ApiError.internal(
@@ -117,9 +120,9 @@ class ProjectController {
 
         if (images) {
           project.images = images;
-          res.status(200).json(project);
+          res.status(OK).json(project);
         } else {
-          res.status(200).json(project);
+          res.status(OK).json(project);
         }
       }
     } catch (error) {
@@ -148,18 +151,19 @@ class ProjectController {
       if (!project) {
         return next(ApiError.notFound('Project not found.'));
       } else {
-        if ((await userService.verifyOwnership(project, req.userID)) === true) {
+        if (
+          (await userService.verifyOwnership(project, req.userID || '')) ===
+          true
+        ) {
           const updatedProject: Projects = await projectService.editProject(
             id,
             req.body
           );
 
-          res.status(200).json(updatedProject);
+          res.status(OK).json(updatedProject);
         } else {
           return next(
-            ApiError.invalidCredentials(
-              'Access denied! You do not own this project.'
-            )
+            ApiError.forbidden('Access denied! You do not own this project.')
           );
         }
       }
@@ -189,14 +193,15 @@ class ProjectController {
       if (!project) {
         next(ApiError.notFound('Project not found.'));
       } else {
-        if ((await userService.verifyOwnership(project, req.userID)) === true) {
+        if (
+          (await userService.verifyOwnership(project, req.userID || '')) ===
+          true
+        ) {
           await projectService.deleteProject(id);
-          res.status(204).end();
+          res.status(NO_CONTENT).end();
         } else {
           return next(
-            ApiError.invalidCredentials(
-              'Access denied! You do not own this project.'
-            )
+            ApiError.forbidden('Access denied! You do not own this project.')
           );
         }
       }

@@ -1,7 +1,7 @@
 import * as yup from 'yup';
 import { NextFunction, Request, Response } from 'express';
 
-import { BidArgs, ProjectArgs, UserUpdateArgs } from '../lib/types/express';
+import { BidArgs, ProjectArgs, UserUpdateArgs } from '../@types/express';
 import { ApiError } from '../controllers';
 
 // Validation to update an existing user

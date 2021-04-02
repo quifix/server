@@ -1,10 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import cors from 'cors';
+import statusCodes from 'http-status-codes';
+
+const { OK } = statusCodes;
 
 const whiteList: Set<string> = new Set(['http://localhost:3000']);
 
 export default cors({
-  optionsSuccessStatus: 200,
+  optionsSuccessStatus: OK,
   credentials: true,
   origin: (origin: string | undefined, cb) => {
     if (whiteList.has(origin!)) {

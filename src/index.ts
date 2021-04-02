@@ -1,6 +1,6 @@
 import 'dotenv/config';
 
-import server from './api';
+import server from './server';
 
 const port: string | number = process.env.PORT || 8080;
 

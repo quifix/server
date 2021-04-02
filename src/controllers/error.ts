@@ -1,3 +1,14 @@
+import statusCodes from 'http-status-codes';
+
+const {
+  BAD_REQUEST,
+  FORBIDDEN,
+  INTERNAL_SERVER_ERROR,
+  NOT_FOUND,
+  UNAUTHORIZED,
+  UNPROCESSABLE_ENTITY
+} = statusCodes;
+
 export default class ApiError {
   code: number;
   message: string;
@@ -18,11 +29,11 @@ export default class ApiError {
    * @returns a 400 error Bad request.
    */
   static badRequest(msg: string): ApiError {
-    return new ApiError(400, msg);
+    return new ApiError(BAD_REQUEST, msg);
   }
 
-  static auth(msg: string): ApiError {
-    return new ApiError(401, msg);
+  static unauthorized(msg: string): ApiError {
+    return new ApiError(UNAUTHORIZED, msg);
   }
 
   /**
@@ -30,8 +41,8 @@ export default class ApiError {
    * @param msg
    * @returns a 403 error Invalid credentials
    */
-  static invalidCredentials(msg: string): ApiError {
-    return new ApiError(403, msg);
+  static forbidden(msg: string): ApiError {
+    return new ApiError(FORBIDDEN, msg);
   }
 
   /**
@@ -40,7 +51,7 @@ export default class ApiError {
    * @returns a 404 Ressource not found or route not found.
    */
   static notFound(msg: string): ApiError {
-    return new ApiError(404, msg);
+    return new ApiError(NOT_FOUND, msg);
   }
   /**
    *
@@ -48,7 +59,7 @@ export default class ApiError {
    * @returns a 422 validation error from validation middleware.
    */
   static validationError(msg: string): ApiError {
-    return new ApiError(422, msg);
+    return new ApiError(UNPROCESSABLE_ENTITY, msg);
   }
 
   /**
@@ -57,6 +68,6 @@ export default class ApiError {
    * @returns a 500 error Internal error.
    */
   static internal(msg: string): ApiError {
-    return new ApiError(500, msg);
+    return new ApiError(INTERNAL_SERVER_ERROR, msg);
   }
 }

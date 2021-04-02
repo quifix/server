@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from 'express';
 import { Bids, Projects, Users } from '@prisma/client';
+import statusCodes from 'http-status-codes';
 
-import { bidService, projectService, userService } from '../service';
+import { bidService, projectService, userService } from '../entities';
 import ApiError from './error';
+
+const { CREATED, NO_CONTENT, OK } = statusCodes;
 
 class BidController {
   /**
@@ -16,7 +19,9 @@ class BidController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const user: Users | null = await userService.findUserByID(req.userID);
+      const user: Users | null = await userService.findUserByID(
+        req.userID || ''
+      );
 
       if (!user) {
         return next(ApiError.notFound('User not found.'));
@@ -28,7 +33,8 @@ class BidController {
 
           if (project) {
             if (
-              (await userService.verifyOwnership(project, req.userID)) === true
+              (await userService.verifyOwnership(project, req.userID || '')) ===
+              true
             ) {
               next(
                 ApiError.badRequest(
@@ -39,7 +45,7 @@ class BidController {
             } else {
               const bid: Bids = await bidService.createBid(req.body);
 
-              res.status(201).json(bid);
+              res.status(CREATED).json(bid);
             }
           } else {
             return next(ApiError.notFound('Project not found.'));
@@ -73,7 +79,7 @@ class BidController {
   ): Promise<void> {
     try {
       const bids: Bids[] = await bidService.findBids();
-      res.status(200).json(bids);
+      res.status(OK).json(bids);
     } catch (error) {
       return next(
         ApiError.internal(
@@ -100,7 +106,7 @@ class BidController {
       if (!bid) {
         return next(ApiError.notFound('Bid not found.'));
       } else {
-        res.status(200).json(bid);
+        res.status(OK).json(bid);
       }
     } catch (error) {
       return next(
@@ -128,15 +134,15 @@ class BidController {
       if (!bid) {
         return next(ApiError.notFound('Bid not found.'));
       } else {
-        if ((await userService.verifyOwnership(bid, req.userID)) === true) {
+        if (
+          (await userService.verifyOwnership(bid, req.userID || '')) === true
+        ) {
           const updatedBid: Bids = await bidService.editBid(bid.id, req.body);
 
-          res.status(200).json(updatedBid);
+          res.status(OK).json(updatedBid);
         } else {
           return next(
-            ApiError.invalidCredentials(
-              'Access denied! You do not own this bid.'
-            )
+            ApiError.forbidden('Access denied! You do not own this bid.')
           );
         }
       }
@@ -167,15 +173,15 @@ class BidController {
         next(ApiError.notFound('Bid not found.'));
         return;
       } else {
-        if ((await userService.verifyOwnership(bid, req.userID)) === true) {
+        if (
+          (await userService.verifyOwnership(bid, req.userID || '')) === true
+        ) {
           await bidService.deleteBid(bid.id);
 
-          res.status(204).end();
+          res.status(NO_CONTENT).end();
         } else {
           return next(
-            ApiError.invalidCredentials(
-              'Access denied! You do not own this bid.'
-            )
+            ApiError.forbidden('Access denied! You do not own this bid.')
           );
         }
       }

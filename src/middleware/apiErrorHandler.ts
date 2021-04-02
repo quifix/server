@@ -1,8 +1,11 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { NextFunction, Request, Response } from 'express';
+import statusCodes from 'http-status-codes';
 
-import { logger } from '../lib';
+import { logger } from '../shared';
 import { ApiError } from '../controllers';
+
+const { INTERNAL_SERVER_ERROR } = statusCodes;
 
 export const apiErrorHandler = (
   err: Error,
@@ -25,7 +28,7 @@ export const apiErrorHandler = (
     return;
   }
   // Fallback to 500 error.
-  res.status(500).json({
+  res.status(INTERNAL_SERVER_ERROR).json({
     message: "We've encounted an error. Please try again later!",
     stack
   });

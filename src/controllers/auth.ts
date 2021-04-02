@@ -1,10 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 import axios from 'axios';
+import statusCodes from 'http-status-codes';
 
-import { authService } from '../service';
+import { authService } from '../entities';
 import ApiError from './error';
-import { UserData } from '../lib/types/express';
+import { UserData } from '../@types/express';
+
+const { CREATED, NO_CONTENT, OK } = statusCodes;
 
 class AuthController {
   /**
@@ -35,15 +38,15 @@ class AuthController {
         const user: Users | null = await authService.login(data.sub);
 
         if (user) {
-          res.status(200).json(user);
+          res.status(OK).json(user);
         } else {
           const user: Users = await authService.register(data);
 
-          res.status(200).json(user);
+          res.status(CREATED).json(user);
         }
       } else {
         return next(
-          ApiError.invalidCredentials('Forbidden access, invalid credentials')
+          ApiError.forbidden('Forbidden access, invalid credentials')
         );
       }
     } catch (error) {
@@ -72,7 +75,7 @@ class AuthController {
       req.userID = null;
       res.clearCookie('_csrf');
 
-      res.status(204).end();
+      res.status(NO_CONTENT).end();
     } catch (error) {
       return next(
         ApiError.internal(
@@ -93,7 +96,7 @@ class AuthController {
     next: NextFunction
   ): Promise<void> {
     try {
-      res.status(200).json({ csrfToken: req.csrfToken() });
+      res.status(OK).json({ csrfToken: req.csrfToken() });
     } catch (error) {
       return next(
         ApiError.internal(

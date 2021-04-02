@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import jwtDecode from 'jwt-decode';
 
 import { ApiError } from '../controllers';
-import { IDToken } from '../lib';
+import { IDToken } from '../@types/express';
 
 export const attachUser = async (
   req: Request,
@@ -16,7 +16,6 @@ export const attachUser = async (
     req.userID = decoded.sub.slice(6);
     next();
   } else {
-    next(ApiError.invalidCredentials('Forbidden access, invalid credentials'));
-    return;
+    return next(ApiError.forbidden('Forbidden access, invalid credentials'));
   }
 };

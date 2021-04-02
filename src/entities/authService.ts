@@ -1,7 +1,7 @@
 import { Users } from '@prisma/client';
 
-import { AuthDao } from '../dao';
-import { UserData } from 'src/lib/types/express';
+import { AuthDao } from '../daos';
+import { UserData } from '../@types/express';
 
 const register = async (data: UserData): Promise<Users> => {
   try {

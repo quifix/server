@@ -1,6 +1,6 @@
 import { Projects } from '@prisma/client';
 
-import { ProjectDao } from '../dao';
+import { ProjectDao } from '../daos';
 
 const createProject = async (data: Projects): Promise<Projects> => {
   try {

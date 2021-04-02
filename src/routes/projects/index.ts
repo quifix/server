@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 import multer from 'multer';
 
 import { ProjectController } from '../../controllers';
@@ -10,7 +10,7 @@ import {
 
 const upload = multer({ dest: 'src/upload/' });
 
-export const router = express.Router();
+export const router = Router();
 
 /**
  * @desc      Create a project

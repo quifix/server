@@ -1,13 +1,13 @@
 import { Users } from '@prisma/client';
-import { ManyUsers } from '../lib/types/express';
 
 import { prisma } from '../db';
+import { UsersResponse } from '../@types/express';
 
 class UserDao {
   // Find All Users
-  async findAll(): Promise<ManyUsers[]> {
+  async findAll(): Promise<UsersResponse[]> {
     try {
-      const users: ManyUsers[] = await prisma.users.findMany({
+      const users: UsersResponse[] = await prisma.users.findMany({
         select: {
           id: true,
           name: true,

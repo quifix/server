@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 
 import { UserController } from '../../controllers';
 import {
@@ -8,7 +8,7 @@ import {
   verifyUserId
 } from '../../middleware';
 
-export const router = express.Router();
+export const router = Router();
 
 /**
  * @desc    Get All Users

@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 
 import { BidController } from '../../controllers';
 import {
@@ -7,7 +7,7 @@ import {
   idParamValidation
 } from '../../middleware';
 
-export const router = express.Router();
+export const router = Router();
 
 /**
  * @desc      Create a bid on a project
@@ -37,12 +37,7 @@ router.get('/:id', asyncHandler(BidController.bidGetById));
  * @route     PUT /api/bids/:id
  * @access    Private
  */
-router.put(
-  '/:id',
-
-  bidValidation,
-  asyncHandler(BidController.bidUpdate)
-);
+router.put('/:id', bidValidation, asyncHandler(BidController.bidUpdate));
 
 /**
  * @desc      Delete an existing bid by the owner of the bid.

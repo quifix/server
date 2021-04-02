@@ -1,9 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
+import statusCodes from 'http-status-codes';
 
 import ApiError from './error';
-import { ManyUsers } from '../lib/types/express';
-import { userService } from '../service';
+import { UsersResponse } from '../@types/express';
+import { userService } from '../entities';
+
+const { NO_CONTENT, OK } = statusCodes;
 
 class UserController {
   /**
@@ -17,9 +20,9 @@ class UserController {
     next: NextFunction
   ): Promise<void> {
     try {
-      const users: ManyUsers[] = await userService.findUsers();
+      const users: UsersResponse[] = await userService.findUsers();
 
-      res.status(200).json(users);
+      res.status(OK).json(users);
     } catch (error) {
       return next(
         ApiError.internal(
@@ -46,7 +49,7 @@ class UserController {
       if (!user) {
         return next(ApiError.notFound('User not found.'));
       } else {
-        res.status(200).json(user);
+        res.status(OK).json(user);
       }
     } catch (error) {
       return next(
@@ -76,7 +79,7 @@ class UserController {
       } else {
         const updateUser = await userService.editUser(user.id, req.body);
 
-        res.status(200).json(updateUser);
+        res.status(OK).json(updateUser);
       }
     } catch (error) {
       return next(
@@ -106,12 +109,14 @@ class UserController {
       } else {
         if (user.id !== req.userID) {
           return next(
-            ApiError.auth(' You are not authorized to perform this task!')
+            ApiError.unauthorized(
+              ' You are not authorized to perform this task!'
+            )
           );
         } else {
           await userService.deleteUser(user.id);
 
-          res.status(204).end();
+          res.status(NO_CONTENT).end();
         }
       }
     } catch (error) {

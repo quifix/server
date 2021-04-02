@@ -1,11 +1,11 @@
 import { Bids, Projects, Users, UserTypes } from '@prisma/client';
 
-import { UserDao } from '../dao';
-import { ManyUsers } from '../lib/types/express';
+import { UserDao } from '../daos';
+import { UsersResponse } from '../@types/express';
 
-const findUsers = async (): Promise<ManyUsers[]> => {
+const findUsers = async (): Promise<UsersResponse[]> => {
   try {
-    const users: ManyUsers[] = await UserDao.findAll();
+    const users: UsersResponse[] = await UserDao.findAll();
     return users;
   } catch (error) {
     return Promise.reject('Internal error.');
