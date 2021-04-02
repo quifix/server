@@ -3,7 +3,7 @@ dotenv.config();
 
 import server from './api';
 
-const port: string | number | undefined = process.env.PORT || 8080;
+const port: string | number = process.env.PORT || 8080;
 
 server.listen(port);
 
