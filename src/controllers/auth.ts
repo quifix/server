@@ -35,13 +35,9 @@ class AuthController {
         const user: Users | null = await authService.login(data.sub);
 
         if (user) {
-          req.headers.authorization = '';
-
           res.status(200).json(user);
         } else {
           const user: Users = await authService.register(data);
-
-          req.headers.authorization = '';
 
           res.status(200).json(user);
         }
@@ -72,12 +68,12 @@ class AuthController {
         secure: process.env.NODE_ENV === 'development' ? true : false
       };
 
+      res.clearCookie('_token', cookieOptions);
       req.userID = null;
       req.auth0User = {};
-      res.clearCookie('_token', cookieOptions);
       res.clearCookie('_csrf');
+
       res.status(204).end();
-      return;
     } catch (error) {
       return next(
         ApiError.internal(

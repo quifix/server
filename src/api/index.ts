@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cookieParser from 'cookie-parser';
 import csrf from 'csurf';
 import helmet from 'helmet';
@@ -20,7 +20,7 @@ import {
   usersRouter
 } from '../routes';
 
-const app = express();
+const app: Application = express();
 const csrfProtection = csrf({ cookie: true });
 
 app.use(express.json({ limit: '50mb' }));
@@ -36,11 +36,13 @@ app.get('/', async (_req: Request, res: Response) => {
 });
 
 app.use('/api/authenticate', authRouter);
-app.use('/api/csrf-token', jwtCheck, attachUser, csrfProtection, csrfRouter);
-app.use('/api/bids', jwtCheck, attachUser, csrfProtection, bidsRouter);
-app.use('/api/logout', jwtCheck, attachUser, logoutRouter);
-app.use('/api/projects', jwtCheck, attachUser, csrfProtection, projectsRouter);
-app.use('/api/users', jwtCheck, attachUser, csrfProtection, usersRouter);
+app.use('/api/csrf-token', csrfProtection, csrfRouter);
+app.use(jwtCheck);
+app.use(attachUser);
+app.use('/api/bids', csrfProtection, bidsRouter);
+app.use('/api/logout', logoutRouter);
+app.use('/api/projects', csrfProtection, projectsRouter);
+app.use('/api/users', csrfProtection, usersRouter);
 app.use(notFound);
 app.use(apiErrorHandler);
 

@@ -1,4 +1,4 @@
-import { Users } from '@prisma/client';
+import { UserTypes } from '@prisma/client';
 
 export interface Auth0User {
   sub: string;
@@ -15,6 +15,13 @@ export interface UserData {
   nickname: string;
   email: string;
   picture: string;
+}
+
+interface UserInfo {
+  id: string;
+  name: string;
+  email: string;
+  type: UserTypes;
 }
 
 export interface UserUpdateArgs {
@@ -67,10 +74,5 @@ declare global {
       userID: string | null;
       auth0User: Auth0User | Record<string, never>;
     }
-  }
-}
-declare module 'express-session' {
-  export interface SessionData {
-    user: Users | null;
   }
 }

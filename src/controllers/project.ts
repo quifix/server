@@ -64,7 +64,7 @@ class ProjectController {
    */
 
   async projectGetAll(
-    _req: Request,
+    req: Request,
     res: Response,
     next: NextFunction
   ): Promise<void> {
@@ -77,11 +77,13 @@ class ProjectController {
         const images: Images[] = await imageService.findProjectImages(
           foundProject.id
         );
-        foundProject.images = images;
 
-        res.status(200).json(foundProject);
+        foundProject.images = images;
       }
+
+      res.status(200).json(projects);
     } catch (error) {
+      console.log(error);
       return next(
         ApiError.internal(
           "We've encounted an internal error. Please try again later!"
