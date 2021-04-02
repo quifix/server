@@ -34,6 +34,12 @@ export default class ApiError {
     return new ApiError(BAD_REQUEST, msg);
   }
 
+  /**
+   *
+   * @param {msg}
+   * @returns a 401 error Unauthorized.
+   *
+   */
   static unauthorized(msg: string): ApiError {
     return new ApiError(UNAUTHORIZED, msg);
   }
