@@ -6,7 +6,7 @@ import statusCodes from 'http-status-codes';
 
 import { imageService, projectService, userService } from '../entities';
 import ApiError from './error';
-import { cloudinary } from '../utils';
+import { cloudinary } from '../shared';
 
 const { CREATED, NO_CONTENT, OK } = statusCodes;
 
