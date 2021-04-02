@@ -8,9 +8,9 @@ import {
   projectValidation
 } from '../../middleware';
 
-const upload = multer({ dest: 'src/upload/' });
-
 export const router = Router();
+
+const upload = multer({ dest: 'src/upload/projects' });
 
 /**
  * @desc      Create a project

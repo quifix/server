@@ -1,5 +1,5 @@
-export { default as AuthController } from './auth';
-export { default as ApiError } from './error';
-export { default as BidController } from './bid';
-export { default as ProjectController } from './project';
-export { default as UserController } from './user';
+export { default as AuthController } from './Auth';
+export { default as ApiError } from './Error';
+export { default as BidController } from './Bid';
+export { default as ProjectController } from './Project';
+export { default as UserController } from './User';

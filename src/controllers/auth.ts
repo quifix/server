@@ -4,7 +4,7 @@ import axios from 'axios';
 import statusCodes from 'http-status-codes';
 
 import { authService } from '../entities';
-import ApiError from './error';
+import ApiError from './Error';
 import { UserData } from '../@types/express';
 
 const { CREATED, NO_CONTENT, OK } = statusCodes;

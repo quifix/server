@@ -5,7 +5,7 @@ import { v4 as uuid } from 'uuid';
 import statusCodes from 'http-status-codes';
 
 import { imageService, projectService, userService } from '../entities';
-import ApiError from './error';
+import ApiError from './Error';
 import { cloudinary } from '../shared';
 
 const { CREATED, NO_CONTENT, OK } = statusCodes;

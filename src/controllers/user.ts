@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 import statusCodes from 'http-status-codes';
 
-import ApiError from './error';
+import ApiError from './Error';
 import { UsersResponse } from '../@types/express';
 import { userService } from '../entities';
 
@@ -44,7 +44,10 @@ class UserController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const user = await userService.findUserByID(id, req.userID || '');
+      const user: Users | null = await userService.findUserByID(
+        id,
+        req.userID || ''
+      );
 
       if (!user) {
         return next(ApiError.notFound('User not found.'));
@@ -77,9 +80,25 @@ class UserController {
       if (!user) {
         return next(ApiError.notFound('User not found.'));
       } else {
-        const updateUser = await userService.editUser(user.id, req.body);
+        const file = req.file;
 
-        res.status(OK).json(updateUser);
+        if (!file) {
+          const updatedUser: Users = await userService.editUser(
+            user.id,
+            req.body
+          );
+
+          res.status(OK).json(updatedUser);
+        } else {
+          req.body.avatar = file.path;
+
+          const updatedUser: Users = await userService.editUser(
+            user.id,
+            req.body
+          );
+
+          res.status(OK).json(updatedUser);
+        }
       }
     } catch (error) {
       return next(
@@ -102,7 +121,7 @@ class UserController {
   ): Promise<void> {
     try {
       const id = req.params.id;
-      const user = await userService.findUserByID(id);
+      const user: Users | null = await userService.findUserByID(id);
 
       if (!user) {
         return next(ApiError.notFound('User not found.'));

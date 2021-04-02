@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import multer from 'multer';
 
 import { UserController } from '../../controllers';
 import {
@@ -9,6 +10,8 @@ import {
 } from '../../middleware';
 
 export const router = Router();
+
+const upload = multer({ dest: 'src/upload/avatars' });
 
 /**
  * @desc    Get All Users
@@ -35,6 +38,7 @@ router.put(
   '/:id',
   userUpdateValidation,
   verifyUserId,
+  upload.single('userAvatar'),
   asyncHandler(UserController.userUpdate)
 );
 

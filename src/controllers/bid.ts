@@ -3,7 +3,7 @@ import { Bids, Projects, Users } from '@prisma/client';
 import statusCodes from 'http-status-codes';
 
 import { bidService, projectService, userService } from '../entities';
-import ApiError from './error';
+import ApiError from './Error';
 
 const { CREATED, NO_CONTENT, OK } = statusCodes;
 
@@ -36,12 +36,11 @@ class BidController {
               (await userService.verifyOwnership(project, req.userID || '')) ===
               true
             ) {
-              next(
+              return next(
                 ApiError.badRequest(
                   'Bad request. Bid on personal project not allowed'
                 )
               );
-              return;
             } else {
               const bid: Bids = await bidService.createBid(req.body);
 
@@ -51,7 +50,7 @@ class BidController {
             return next(ApiError.notFound('Project not found.'));
           }
         } else {
-          next(
+          return next(
             ApiError.badRequest(
               'Bad request. This project is only open to contractors and handymen!'
             )
@@ -170,8 +169,7 @@ class BidController {
       const bid: Bids | null = await bidService.findBidByID(id);
 
       if (!bid) {
-        next(ApiError.notFound('Bid not found.'));
-        return;
+        return next(ApiError.notFound('Bid not found.'));
       } else {
         if (
           (await userService.verifyOwnership(bid, req.userID || '')) === true
