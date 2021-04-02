@@ -37,12 +37,10 @@ app.get('/', async (_req: Request, res: Response) => {
 
 app.use('/api/authenticate', authRouter);
 app.use('/api/csrf-token', csrfProtection, csrfRouter);
-app.use(jwtCheck);
-app.use(attachUser);
-app.use('/api/bids', csrfProtection, bidsRouter);
-app.use('/api/logout', logoutRouter);
-app.use('/api/projects', csrfProtection, projectsRouter);
-app.use('/api/users', csrfProtection, usersRouter);
+app.use('/api/bids', jwtCheck, attachUser, csrfProtection, bidsRouter);
+app.use('/api/logout', jwtCheck, attachUser, logoutRouter);
+app.use('/api/projects', jwtCheck, attachUser, csrfProtection, projectsRouter);
+app.use('/api/users', jwtCheck, attachUser, csrfProtection, usersRouter);
 app.use(notFound);
 app.use(apiErrorHandler);
 
