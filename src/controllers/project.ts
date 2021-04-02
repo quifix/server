@@ -83,7 +83,6 @@ class ProjectController {
 
       res.status(200).json(projects);
     } catch (error) {
-      console.log(error);
       return next(
         ApiError.internal(
           "We've encounted an internal error. Please try again later!"
