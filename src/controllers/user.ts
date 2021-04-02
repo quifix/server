@@ -1,7 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { Users } from '@prisma/client';
 
-import { prisma } from '../db';
 import ApiError from './error';
 import { ManyUsers } from '../lib/types/express';
 import { userService } from '../service';
@@ -42,26 +41,10 @@ class UserController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const user = await prisma.users.findUnique({
-        where: { id },
-        select: {
-          id: true,
-          name: true,
-          avatar: true,
-          email: true,
-          address: true,
-          city: true,
-          state: true,
-          country: true,
-          type: true,
-          income: req.auth0User.sub === id ? true : false,
-          walletId: req.auth0User.sub === id ? true : false
-        }
-      });
+      const user = await userService.findUserByID(id, req.userID || '');
 
       if (!user) {
-        next(ApiError.notFound('User not found.'));
-        return;
+        return next(ApiError.notFound('User not found.'));
       } else {
         res.status(200).json(user);
       }
@@ -86,18 +69,12 @@ class UserController {
   ): Promise<void> {
     try {
       const id: string = req.params.id;
-      const user: Users | null = await prisma.users.findUnique({
-        where: { id }
-      });
+      const user: Users | null = await userService.findUserByID(id);
 
       if (!user) {
-        next(ApiError.notFound('User not found.'));
-        return;
+        return next(ApiError.notFound('User not found.'));
       } else {
-        const updateUser = await prisma.users.update({
-          where: { id: user.id },
-          data: { ...req.body }
-        });
+        const updateUser = await userService.editUser(user.id, req.body);
 
         res.status(200).json(updateUser);
       }
@@ -122,15 +99,20 @@ class UserController {
   ): Promise<void> {
     try {
       const id = req.params.id;
-      const user = await prisma.users.findUnique({ where: { id } });
+      const user = await userService.findUserByID(id);
 
       if (!user) {
-        next(ApiError.notFound('User not found.'));
-        return;
+        return next(ApiError.notFound('User not found.'));
       } else {
-        await prisma.users.delete({ where: { id } });
+        if (user.id !== req.userID) {
+          return next(
+            ApiError.auth(' You are not authorized to perform this task!')
+          );
+        } else {
+          await userService.deleteUser(user.id);
 
-        res.status(204).end();
+          res.status(204).end();
+        }
       }
     } catch (error) {
       return next(
