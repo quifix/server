@@ -36,7 +36,7 @@ class BidDAO {
     }
   }
 
-  // Edid Bid
+  // Edit Bid
   async edit(id: string, data: Bids): Promise<Bids> {
     try {
       const bid: Bids = await prisma.bids.update({ where: { id }, data });
