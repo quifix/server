@@ -1,13 +1,10 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+}
 
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-generator client {
-  provider = "prisma-client-js"
 }
 
 model Users {
@@ -24,12 +21,6 @@ model Users {
   income   Int?
   bids     Bids[]     @relation("UserBids")
   projects Projects[] @relation("UserProjects")
-}
-
-enum UserTypes {
-  CUSTOMER
-  CONTRACTOR
-  HANDYMAN
 }
 
 model Projects {
@@ -58,6 +49,20 @@ model Bids {
   user      Users    @relation("UserBids", fields: [userId], references: [id])
 }
 
+model Images {
+  id        String   @id @default(uuid())
+  url       String
+  public_id String
+  projectId String
+  project   Projects @relation("ProjectImages", fields: [projectId], references: [id])
+}
+
+enum UserTypes {
+  CUSTOMER
+  CONTRACTOR
+  HANDYMAN
+}
+
 enum ProjectTypes {
   PAINTING
   CONSTRUCTION
@@ -65,12 +70,4 @@ enum ProjectTypes {
   RENOVATION
   OUTDOOR_PROJECT
   OTHER
-}
-
-model Images {
-  id        String   @id @default(uuid())
-  url       String
-  public_id String
-  projectId String
-  project   Projects @relation("ProjectImages", fields: [projectId], references: [id])
 }
