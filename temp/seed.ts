@@ -1,4 +1,4 @@
-import { Bid, Project, ProjectType, User, UserType } from '../src/lib';
+import { Bid, Project, ProjectType, User, UserType } from '../src/@types'
 
 export const users: User[] = [
   {
@@ -155,7 +155,7 @@ export const projects: Project[] = [
     title: 'Need to dig trenches in basement (Los Angeles)',
     description:
       'Need to dig two 15 ft long, 2ft deep, 1 foot wide trenches in basement and then mix and pour concrete in trenches. Offering $300 labor to complete those tasks. You will be using pick axes and shovels. You will move the dirt using buckets. One man will take 2 to 3 days to complete.',
-    type: ProjectType.Contruction,
+    type: ProjectType.Construction,
     isOpen: true,
     userId: '98f83778-7435-4c8c-a02f-0856a5681bea',
     address: '3212 Parkview Drive',

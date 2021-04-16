@@ -4,7 +4,7 @@ import statusCodes from 'http-status-codes';
 
 import ApiError from './Error';
 import { UsersResponse } from '../@types/express';
-import { userService } from '../entities';
+import { userService } from '../services';
 
 const { NO_CONTENT, OK } = statusCodes;
 

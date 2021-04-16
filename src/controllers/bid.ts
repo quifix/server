@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from 'express';
 import { Bids, Projects, Users } from '@prisma/client';
 import statusCodes from 'http-status-codes';
 
-import { bidService, projectService, userService } from '../entities';
+import { bidService, projectService, userService } from '../services';
 import ApiError from './Error';
 
 const { CREATED, NO_CONTENT, OK } = statusCodes;

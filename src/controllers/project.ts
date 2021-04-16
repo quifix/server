@@ -4,7 +4,7 @@ import { UploadApiResponse } from 'cloudinary';
 import { v4 as uuid } from 'uuid';
 import statusCodes from 'http-status-codes';
 
-import { imageService, projectService, userService } from '../entities';
+import { imageService, projectService, userService } from '../services';
 import ApiError from './Error';
 import { cloudinary } from '../shared';
 

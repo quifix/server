@@ -3,7 +3,7 @@ import { Users } from '@prisma/client';
 import axios from 'axios';
 import statusCodes from 'http-status-codes';
 
-import { authService } from '../entities';
+import { authService } from '../services';
 import ApiError from './Error';
 import { UserData } from '../@types/express';
 
